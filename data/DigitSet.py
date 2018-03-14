@@ -22,6 +22,10 @@ class DigitSet():
         return self.data[key]
     
     def get(self, digit_index, as_data_frame=False):
+        """ Retrieve the digit at the given index
+        @param digit_index: the index of the digit to retrieve 
+        @param as_data_frame: if True we return the digit as a pandas dataframe
+        @returns the digit located at the given index in this digitset's data"""
         digit = self.data[digit_index]
         if as_data_frame:
             return pd.DataFrame(digit, columns=DataSetContract.DigitSet.Frame.columns)
