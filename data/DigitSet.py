@@ -52,6 +52,13 @@ class DigitSet():
         res.data = copy.copy(self.data)
         res.labels = copy.copy(self.labels)
         return res
+    
+    def convert_t_to_dt(self):
+        """ Converts the time feature from 't' (the time elapsed since the first point in this sequence)
+        to 'dt' (the difference between each point and its previous point)"""
+        for digit in self.data:
+            for i in range(len(digit)-1, 0, -1):
+                digit[i][3] -= digit[i-1][3]
 
     @staticmethod
     def load_json(filename):
