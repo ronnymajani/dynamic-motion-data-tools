@@ -15,7 +15,7 @@ digitset.apply(lambda x: normalize_pressure_value(x, 512))
 # digitset.convert_t_to_dt()
 # plot random digit
 scaled_digit, label = digitset[-7]
-plot.show_digit(scaled_digit, label=label, padding=0.1)
+plot.show_digit(scaled_digit, label=label, show_lines=True, show_points=True, use_time_as_color=False, padding=0.1)
 
 #%%
 #if __name__ == '__main__':
@@ -26,6 +26,8 @@ plot.show_digit(scaled_digit, label=label, padding=0.1)
     
 #%%
 # convert dt to t
-#digit = digitset[30].copy()
-#for i in range(len(digit)-1, 0, -1):
-#    digit[i][3] -= digit[i-1][3]
+#digit, label = digitset[30]
+#digit = digit.copy()
+#for i in range(1, len(digit)):
+#    digit[i][3] += digit[i-1][3]
+#    

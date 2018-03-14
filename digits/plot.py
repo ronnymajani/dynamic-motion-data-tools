@@ -7,9 +7,19 @@ from scipy import interpolate, ndimage
 
 
 
-def show_digit(digit, label=None, show_points=True, show_lines=True, padding=100):
+def show_digit(digit, label=None, show_points=True, show_lines=True, use_time_as_color=False, padding=100):
     """ Displays the given digit
     @param digit: A sequence of [X,Y,P,t] points that represent a dynamically drawn handwritten digit
+    @param label: The label of the current digit. If given, the plot's window will be set to the label
+    @param show_points: If True, the function will explicitly display the actual points in the digit
+    @param show_lines: If True, the function will draw a spline between the points
+    @param use_time_as_color: If True, and show_points is True, the drawn points will use the time values
+                              of the digits to determine which color from the colormap to use, otherwise the
+                              colors will be uniformly distributed. You can only use this if the time values 
+                              of the given digit is the time elapsed since the first point in the sequence.
+                              This won't work if the time feature represents 'dt' (the time difference between
+                              each two points)
+    @param padding: how much padding to add around the drawn shapes
     """
     # extract X, Y coordinates
     data = np.array(digit, dtype=np.float32).reshape(-1, 4)
@@ -55,7 +65,10 @@ def show_digit(digit, label=None, show_points=True, show_lines=True, padding=100
         plt.gcf().canvas.set_window_title("Digit: %d" % label)
     # Show the points of the digit
     if show_points:
-        c = np.arange(len(x))
+        if use_time_as_color:
+            c = t.flatten()
+        else:
+            c = np.arange(len(x))
         plt.scatter(x, y, c=c, cmap="inferno")
     # Interpolate between points and draw a connecting line (spline)
     if show_lines:
