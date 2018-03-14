@@ -60,9 +60,10 @@ class DigitSet():
     def convert_t_to_dt(self):
         """ Converts the time feature from 't' (the time elapsed since the first point in this sequence)
         to 'dt' (the difference between each point and its previous point)"""
+        dt_idx = DataSetContract.DigitSet.Frame.indices['dt']
         for digit in self.data:
             for i in range(len(digit)-1, 0, -1):
-                digit[i][3] -= digit[i-1][3]
+                digit[i][dt_idx] -= digit[i-1][dt_idx]
 
     @staticmethod
     def load_json(filename):

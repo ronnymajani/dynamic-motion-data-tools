@@ -12,7 +12,7 @@ digitset = DigitSet(filename)
 digitset.apply(apply_mean_centering)
 digitset.apply(apply_unit_distance_normalization)
 digitset.apply(lambda x: normalize_pressure_value(x, 512))
-# digitset.convert_t_to_dt()
+#digitset.convert_t_to_dt()
 # plot random digit
 scaled_digit, label = digitset[-7]
 plot.show_digit(scaled_digit, label=label, show_lines=True, show_points=True, use_time_as_color=False, padding=0.1)

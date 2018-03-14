@@ -2,13 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+from contract import DataSetContract
 
 
 def normalize_pressure_value(digit, max_pressure_val=512, inplace=False):
     """ Normalizes the pressure value to the range [0.0, 1.0] given the maximum pressure value possible """
+    p_idx = DataSetContract.DigitSet.Frame.indices['P']
     if not isinstance(digit, np.ndarray) or inplace == False:
         digit = np.array(digit)
-    digit[:, 2] /= max_pressure_val
+    digit[:, p_idx] /= max_pressure_val
     return digit
 
 
@@ -24,13 +26,16 @@ def apply_mean_centering(digit, inplace=False):
     if not isinstance(digit, np.ndarray) or inplace == False:
         digit = np.array(digit)
         
-    x = digit[:, 0]
-    y = digit[:, 1]
+    x_idx = DataSetContract.DigitSet.Frame.indices['X']
+    y_idx = DataSetContract.DigitSet.Frame.indices['Y']
+    
+    x = digit[:, x_idx]
+    y = digit[:, y_idx]
     
     mean_x, mean_y = x.mean(), y.mean()
     
-    digit[:, 0] = x - mean_x
-    digit[:, 1] = y - mean_y
+    digit[:, x_idx] = x - mean_x
+    digit[:, y_idx] = y - mean_y
     
     return digit
 
@@ -47,9 +52,12 @@ def apply_unit_distance_normalization(digit, inplace=False):
     """
     if not isinstance(digit, np.ndarray) or inplace == False:
         digit = np.array(digit)
-        
-    x = digit[:, 0]
-    y = digit[:, 1]
+    
+    x_idx = DataSetContract.DigitSet.Frame.indices['X']
+    y_idx = DataSetContract.DigitSet.Frame.indices['Y']
+    
+    x = digit[:, x_idx]
+    y = digit[:, y_idx]
     
     mean_x, mean_y = x.mean(), y.mean()
     
@@ -57,8 +65,8 @@ def apply_unit_distance_normalization(digit, inplace=False):
     max_distance = squared_euclidian_distance.max()
     scale = np.sqrt(max_distance)
     
-    digit[:, 0] = x / scale
-    digit[:, 1] = y / scale
+    digit[:, x_idx] = x / scale
+    digit[:, y_idx] = y / scale
     return digit
 
 
