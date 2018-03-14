@@ -14,8 +14,8 @@ digitset.apply(apply_unit_distance_normalization)
 digitset.apply(lambda x: normalize_pressure_value(x, 512))
 # digitset.convert_t_to_dt()
 # plot random digit
-scaled_digit = digitset[-1]
-plot.show_digit(scaled_digit, padding=0.1)
+scaled_digit, label = digitset[-7]
+plot.show_digit(scaled_digit, label=label, padding=0.1)
 
 #%%
 #if __name__ == '__main__':

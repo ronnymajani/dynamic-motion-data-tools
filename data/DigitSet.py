@@ -19,7 +19,7 @@ class DigitSet():
             self.load(filename)
             
     def __getitem__(self, key):
-        return self.data[key]
+        return self.data[key], self.labels[key]
     
     def get(self, digit_index, as_data_frame=False):
         """ Retrieve the digit at the given index
