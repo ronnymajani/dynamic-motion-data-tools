@@ -2,21 +2,22 @@
 # -*- coding: utf-8 -*-
 
 import digits.plot as plot
-from digits.preprocessing import apply_mean_centering, apply_unit_distance_normalization
+from digits.preprocessing import *
 from data.DigitSet import DigitSet
 
 #%%
 filename = "temp/01.15_14.03.2018_digitset.json"
 digitset = DigitSet(filename)
-digit = digitset[0]
+# Apply transformations
 digitset.apply(apply_mean_centering)
 digitset.apply(apply_unit_distance_normalization)
-scaled_digit = digitset[0]
-#scaled_digit = apply_unit_distance_normalization(apply_mean_centering(digit))
+digitset.apply(lambda x: normalize_pressure_value(x, 512))
+# digitset.convert_t_to_dt()
+# plot random digit
+scaled_digit = digitset[-1]
 plot.show_digit(scaled_digit, padding=0.1)
-#plot.show_digit(digit)
 
-
+#%%
 #if __name__ == '__main__':
 #    filename = "temp/01.15_14.03.2018_digitset.json"
 #    digitset = loader.load_digitset(filename)
@@ -24,3 +25,7 @@ plot.show_digit(scaled_digit, padding=0.1)
 #    plot.show_digit(data[-7])
     
 #%%
+# convert dt to t
+#digit = digitset[30].copy()
+#for i in range(len(digit)-1, 0, -1):
+#    digit[i][3] -= digit[i-1][3]
