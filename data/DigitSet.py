@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import pandas as pd
 import copy
 import json
 from contract import DataSetContract
@@ -19,9 +20,17 @@ class DigitSet():
             
     def __getitem__(self, key):
         return self.data[key]
+    
+    def get(self, digit_index, as_data_frame=False):
+        digit = self.data[digit_index]
+        if as_data_frame:
+            return pd.DataFrame(digit, columns=DataSetContract.DigitSets.Frame.columns)
+        else:
+            return digit
             
     def apply(self, operation):
-        """Apply a given operation to each digit in the digitset"""
+        """Apply a given digit operation to each digit in the digitset
+        This function is for operations that work on individual digits"""
         res = []
         for digit in self.data:
             res.append(operation(digit))
