@@ -24,7 +24,7 @@ class DigitSet():
     def get(self, digit_index, as_data_frame=False):
         digit = self.data[digit_index]
         if as_data_frame:
-            return pd.DataFrame(digit, columns=DataSetContract.DigitSets.Frame.columns)
+            return pd.DataFrame(digit, columns=DataSetContract.DigitSet.Frame.columns)
         else:
             return digit
             
@@ -72,10 +72,10 @@ class DigitSet():
         @returns data: The raw sequence data where each row corresponds to a sample
         @returns labels: The corresponding labels of the raw data
         """
-        digitset = digitset_json[DataSetContract.DigitSets.DIGITS]
+        digitset = digitset_json[DataSetContract.DigitSet.DIGITS]
         data = []
         labels = []
-        for digit_idx in DataSetContract.DigitSets.Digits:
+        for digit_idx in DataSetContract.DigitSet.digits:
             for sample in digitset[digit_idx]:
                 data.append(np.array(sample))
                 labels.append(int(digit_idx))
