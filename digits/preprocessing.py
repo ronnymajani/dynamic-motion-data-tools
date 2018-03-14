@@ -3,6 +3,15 @@
 
 import numpy as np
 
+
+def normalize_pressure_value(digit, max_pressure_val=512, inplace=False):
+    """ Normalizes the pressure value to the range [0.0, 1.0] given the maximum pressure value possible """
+    if not isinstance(digit, np.ndarray) or inplace == False:
+        digit = np.array(digit)
+    digit[:, 2] /= max_pressure_val
+    return digit
+
+
 def apply_mean_centering(digit, inplace=False):
     """ Translates the coordinates X, Y so their mean is aligned with the origin (0,0)
     @param digit: The digit to apply the transformationt to
