@@ -7,7 +7,7 @@ from scipy import interpolate, ndimage
 
 #%%
 
-def show_digit(digit, show_points=True):
+def show_digit(digit, show_points=True, show_lines=True, padding=100):
     """ Displays the given digit
     @param digit: A sequence of [X,Y,P,t] points that represent a dynamically drawn handwritten digit
     """
@@ -31,17 +31,23 @@ def show_digit(digit, show_points=True):
     tck, u = interpolate.splprep([xn, yn], s=0)
     xi, yi = interpolate.splev(np.linspace(0, 1, 1000), tck)
     # plot
-    if show_points:
-        plt.plot(x, y, 'o')
-    plt.plot(xi, yi, '-')
     # invert Y axis (our coordinates assume X, Y is the top left corner)
     ax = plt.gca()
-#    ax.set_ylim(ax.get_ylim()[::-1])
-    ax_max = max(y.max(), x.max()) + 100
-    ax_min = min(y.min(), x.min()) - 100
-    ax.set_xlim(ax_min, ax_max)
-    ax.set_ylim(ax_max, ax_min)
+    y_max = max(y.max(), yi.max()) + padding
+    y_min = min(y.min(), yi.min()) - padding
+    x_max = max(x.max(), xi.max()) + padding
+    x_min = min(x.min(), xi.min()) - padding
+    ax.set_xlim(x_min, x_max)
+    ax.set_ylim(y_max, y_min)
+    ax.set_aspect('equal', adjustable='box')
     ax.xaxis.tick_top()
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    
+    if show_points:
+        plt.plot(x, y, 'o')
+    if show_lines:
+        plt.plot(xi, yi, '-')
 
 
 
