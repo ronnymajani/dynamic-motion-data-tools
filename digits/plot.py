@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import interpolate, ndimage
 
-#%%
+
 
 def show_digit(digit, show_points=True, show_lines=True, padding=100):
     """ Displays the given digit
@@ -41,6 +41,7 @@ def show_digit(digit, show_points=True, show_lines=True, padding=100):
     ax.set_ylim(y_max, y_min)
     ax.set_aspect('equal', adjustable='box')
     ax.xaxis.tick_top()
+    ax.xaxis.set_label_position('top') 
     plt.xlabel("X")
     plt.ylabel("Y")
     
