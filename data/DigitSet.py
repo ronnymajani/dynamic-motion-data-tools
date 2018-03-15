@@ -14,6 +14,7 @@ class DigitSet():
         self.json = None
         self.data = None
         self.labels = None
+        self._is_dt = True  # specifies whether the time feature is dt or elapsed time since begin of sequence
         
         if filename is not None:
             self.load(filename)
@@ -28,7 +29,12 @@ class DigitSet():
         @returns the digit located at the given index in this digitset's data"""
         digit = self.data[digit_index]
         if as_data_frame:
-            return pd.DataFrame(digit, columns=DataSetContract.DigitSet.Frame.columns)
+            cols = DataSetContract.DigitSet.Frame.columns
+            if not self.time_is_dt():
+                dt_idx = DataSetContract.DigitSet.Frame.indices['dt']
+                cols = list(cols)
+                cols[dt_idx] = 't'
+            return pd.DataFrame(digit, columns=cols)
         else:
             return digit
             
@@ -55,15 +61,25 @@ class DigitSet():
         res.json = copy.deepcopy(self.json)
         res.data = copy.copy(self.data)
         res.labels = copy.copy(self.labels)
+        res._is_dt = self._is_dt
         return res
     
-    def convert_t_to_dt(self):
-        """ Converts the time feature from 't' (the time elapsed since the first point in this sequence)
-        to 'dt' (the difference between each point and its previous point)"""
+    def convert_dt_to_t(self):
+        """ Converts the time feature from 'dt' (the difference between each point and its previous point)
+        to 't' (the time elapsed since the first point in this sequence) """
         dt_idx = DataSetContract.DigitSet.Frame.indices['dt']
         for digit in self.data:
-            for i in range(len(digit)-1, 0, -1):
-                digit[i][dt_idx] -= digit[i-1][dt_idx]
+            for i in range(1, len(digit)):
+                digit[i][dt_idx] += digit[i-1][dt_idx]
+        self._is_dt = False
+        return self
+    
+    def time_is_dt(self):
+        """
+        @returns True if the time feature of the digits is measured in 'dt' (the difference between each point and its previous point)
+        @returns False if the time feature of the digits is measured in 't' (the time elapsed since the first point in this sequence)
+        """
+        return self._is_dt
 
     @staticmethod
     def load_json(filename):

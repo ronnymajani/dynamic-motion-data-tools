@@ -18,9 +18,13 @@ def show_digit(digit, label=None, show_points=True, show_lines=True, use_time_as
                               colors will be uniformly distributed. You can only use this if the time values 
                               of the given digit is the time elapsed since the first point in the sequence.
                               This won't work if the time feature represents 'dt' (the time difference between
-                              each two points)
+                              each two points). This features means that the faster a number was drawn, the more
+                              the points will have similar colors. In other words this feature visualizes the speed
+                              of the drawing using the colors of the points, and is useful to compare digits as well
     @param padding: how much padding to add around the drawn shapes
     """
+    #todo: clear plot option?
+    #todo: use subplots?
     # extract X, Y coordinates
     data = np.array(digit, dtype=np.float32).reshape(-1, 4)
     x, y, p, t = np.split(data, 4, axis=1)

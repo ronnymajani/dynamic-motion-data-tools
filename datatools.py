@@ -6,16 +6,24 @@ from digits.preprocessing import *
 from data.DigitSet import DigitSet
 
 #%%
-filename = "temp/01.15_14.03.2018_digitset.json"
+filename = "temp/11.42_15.03.2018_digitset.json"
 digitset = DigitSet(filename)
+scaled = digitset.copy()
 # Apply transformations
-digitset.apply(apply_mean_centering)
-digitset.apply(apply_unit_distance_normalization)
-digitset.apply(lambda x: normalize_pressure_value(x, 512))
-#digitset.convert_t_to_dt()
+scaled.apply(apply_mean_centering)
+scaled.apply(apply_unit_distance_normalization)
+scaled.apply(lambda x: normalize_pressure_value(x, 512))
+if scaled.time_is_dt():
+    scaled.convert_dt_to_t()
+
+#%%
+digit, label = digitset[-7]
+plot.show_digit(digit, label=label, show_lines=True, show_points=True, use_time_as_color=False, padding=0.1)
+
+#%%
 # plot random digit
-scaled_digit, label = digitset[-7]
-plot.show_digit(scaled_digit, label=label, show_lines=True, show_points=True, use_time_as_color=False, padding=0.1)
+digit, label = scaled[2]
+plot.show_digit(digit, label=label, show_lines=True, show_points=True, use_time_as_color=False, padding=0.1)
 
 #%%
 #if __name__ == '__main__':
