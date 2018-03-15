@@ -17,13 +17,19 @@ if scaled.time_is_dt():
     scaled.convert_dt_to_t()
 
 #%%
-digit, label = digitset[-7]
-plot.show_digit(digit, label=label, show_lines=True, show_points=True, use_time_as_color=False, padding=0.1)
+digit, label = digitset[6]
+plot.show_digit(digit, label=label, 
+                show_lines=True, show_points=True, 
+                use_time_as_color=(not digitset.time_is_dt()), 
+                padding=100)
 
 #%%
 # plot random digit
-digit, label = scaled[2]
-plot.show_digit(digit, label=label, show_lines=True, show_points=True, use_time_as_color=False, padding=0.1)
+digit, label = scaled[6]
+plot.show_digit(digit, label=label, 
+                show_lines=True, show_points=True, 
+                use_time_as_color=(not scaled.time_is_dt()), 
+                padding=0.1)
 
 #%%
 #if __name__ == '__main__':
