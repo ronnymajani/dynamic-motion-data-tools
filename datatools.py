@@ -6,8 +6,6 @@ from utils.preprocessing import *
 from data.DigitSet import DigitSet
 from data.DataSet import DataSet
 
-
-
 #%%
 folder = 'temp'
 dataset = DataSet(folder)

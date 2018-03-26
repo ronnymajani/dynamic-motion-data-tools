@@ -26,8 +26,10 @@ def show_digit(digit, label=None, show_points=True, show_lines=True, use_time_as
     #todo: clear plot option?
     #todo: use subplots?
     # extract X, Y coordinates
-    data = np.array(digit, dtype=np.float32).reshape(-1, 4)
-    x, y, p, t = np.split(data, 4, axis=1)
+    frame_len = len(digit[0])
+    data = np.array(digit, dtype=np.float32).reshape(-1, frame_len)
+    x = data[:, 0]
+    y = data[:, 1]
     x = x.flatten()
     y = y.flatten()
     
