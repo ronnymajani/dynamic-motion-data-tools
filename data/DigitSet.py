@@ -56,6 +56,7 @@ class DigitSet():
             digit = self.data[i]
             res[i, :len(digit), :] = digit
         return res
+    
             
     def apply(self, operation):
         """Apply a given digit operation to each digit in the digitset

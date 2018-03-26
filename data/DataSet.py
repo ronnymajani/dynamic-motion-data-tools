@@ -6,6 +6,7 @@ import copy
 import numpy as np
 from data.contract import DataSetContract
 from data.DigitSet import DigitSet
+from sklearn.preprocessing import OneHotEncoder
 
 #todo: add functions for loading and storing information about dataset
 #todo: add functions for loading a unified dataset file instead of many digitsets
@@ -55,6 +56,22 @@ class DataSet(object):
             digit = self.data[i]
             res[i, :len(digit), :] = digit
         return res    
+    
+    def get_labels_as_numpy(self, onehot=False):
+        """ Returns the labels as a numpy ndarray
+        if onehot is set to True, it will onehot encode the labels using scikit learn's OneHotEncoder
+        and will return both the encoder and the encoded labels
+        @returns ndarray of labels if onehot is False
+        @returns (OneHotEncoder, ndarray of labels) if onehot is True
+        """
+        labels = np.array(self.labels).reshape(-1, 1)
+        if onehot:
+            encoder = OneHotEncoder()
+            labels = encoder.fit_transform(labels)
+            return encoder, labels
+        else:
+            return labels
+            
     
     def copy(self):
         """Returns a copy of this dataset"""
