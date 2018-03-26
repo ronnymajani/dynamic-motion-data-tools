@@ -12,20 +12,23 @@ from data.DigitSet import DigitSet
 
 class DataSet(object):
     def __init__(self, folder=None):
-        self.data = []
+        self.data = None
+        self.labels = None
         self._is_dt = True
         if folder is not None:
             self.load(folder)
     
     def load(self, folder):
         """ Load a set of digitsets in the given folder """
-        if len(self.data) > 0:
+        if self.data is not None:
             warnings.warn("Loading a new dataset into a non empty DataSet object")
         files = [os.path.join(folder, file) for file in os.listdir(folder)]
         self.data = []
+        self.labels = []
         for file in files:
             digitset = DigitSet(file)
             self.data += digitset.data
+            self.labels += digitset.labels
             
     def apply(self, operation):
         """Apply a given digit operation to each digit in the digitset
@@ -57,6 +60,7 @@ class DataSet(object):
         """Returns a copy of this dataset"""
         res = DataSet()
         res.data = copy.copy(self.data)
+        res.labels = copy.copy(self.labels)
         res._is_dt = self._is_dt
         return res
     
