@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import digits.plot as plot
-from digits.preprocessing import *
+import utils.plot as plot
+from utils.preprocessing import *
 from data.DigitSet import DigitSet
 from data.DataSet import DataSet
 

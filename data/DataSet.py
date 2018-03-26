@@ -4,7 +4,7 @@ import os
 import warnings
 import copy
 import numpy as np
-from contract import DataSetContract
+from data.contract import DataSetContract
 from data.DigitSet import DigitSet
 
 #todo: add functions for loading and storing information about dataset

@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import copy
 import json
-from contract import DataSetContract
+from data.contract import DataSetContract
 import warnings
 
 class DigitSet():

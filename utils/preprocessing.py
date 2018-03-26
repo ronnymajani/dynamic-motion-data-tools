@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from contract import DataSetContract
+from data.contract import DataSetContract
 
 
 def normalize_pressure_value(digit, max_pressure_val=512, inplace=False):
