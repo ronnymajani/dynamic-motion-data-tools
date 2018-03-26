@@ -7,7 +7,7 @@ from scipy import interpolate, ndimage
 
 
 
-def show_digit(digit, label=None, show_points=True, show_lines=True, use_time_as_color=False, padding=100):
+def show_digit(digit, label=None, show_points=True, show_lines=True, use_time_as_color=False, padding=0.1):
     """ Displays the given digit
     @param digit: A sequence of [X,Y,P,t] points that represent a dynamically drawn handwritten digit
     @param label: The label of the current digit. If given, the plot's window will be set to the label

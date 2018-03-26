@@ -37,6 +37,25 @@ class DigitSet():
             return pd.DataFrame(digit, columns=cols)
         else:
             return digit
+        
+    def as_numpy(self, mask_value):
+        """ Returns the entire digitset as a numpy array in the shape
+        [number of samples , maximum sequence length , length of single frame]
+        The function also pads sequences less than the maximum sequence length with the given
+        masking value.
+        """
+        # first find max sequence length
+        max_len = 0
+        for digit in self.data:
+            max_len = max(max_len, len(digit))
+        # create empty numpy array 
+        res = np.empty((len(self.data), max_len, len(DataSetContract.DigitSet.Frame.columns)))
+        res.fill(mask_value)
+        # fill in array
+        for i in range(len(self.data)):
+            digit = self.data[i]
+            res[i, :len(digit), :] = digit
+        return res
             
     def apply(self, operation):
         """Apply a given digit operation to each digit in the digitset
