@@ -72,22 +72,25 @@ def apply_unit_distance_normalization(digit, inplace=False):
 
 
 
-def generate_digit_derivative(digit, normalize=False):
-    """ Generates the given digit X, Y data into derivatives (change of X, Y values each timestep)
+def convert_xy_to_derivative(digit, normalize=False, inplace=False):
+    """ Converts the given digit's X, Y data into derivatives (change of X, Y values each timestep)
     @param digit: The digit to generate the derivative from
     @param normalize: If set to True, the generated derivative vectors will be normalized to unit length,
     stripping them of any magnitude information.
-    @returns The generated 
+    @param inplace: If True, the operation is performed inplace
+                    (this only works if digit is already a numpy array)
+                    If False, a copy of the given data is made
+    @returns The given digit with its X Y values replaced with their derivatives
     """
-    if not isinstance(digit, np.ndarray):
+    if not isinstance(digit, np.ndarray) or inplace == False:
         digit = np.array(digit)
 
     x_idx = DataSetContract.DigitSet.Frame.indices['X']
     y_idx = DataSetContract.DigitSet.Frame.indices['Y']
 
-    digit = digit[:, [x_idx, y_idx]]  # select only the X and Y values    
-    rotated_digit = np.roll(digit, -1)  # the digit frames one time step ahead
-    derivative = rotated_digit - digit
+    digit_xy = digit[:, [x_idx, y_idx]]  # select only the X and Y values    
+    rotated_digit = np.roll(digit_xy, -1)  # the digit frames one time step ahead
+    derivative = rotated_digit - digit_xy
     derivative = derivative[:-1]  # drop last element as it is connecting the first and last frame
     
     if normalize:
@@ -100,7 +103,8 @@ def generate_digit_derivative(digit, normalize=False):
         dx /= unit
         dy /= unit
         
-    return derivative
+    digit[:-1, [x_idx, y_idx]] = derivative
+    return digit
     
 
 
