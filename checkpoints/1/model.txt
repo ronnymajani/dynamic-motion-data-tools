@@ -18,6 +18,7 @@ Model:
 - Dense(10)
 - Softmax
 
+
 Training:
 - Epochs 15
 - Loss: categorical crossentropy

@@ -17,7 +17,7 @@ dataset.apply(lambda x: normalize_pressure_value(x, 512))
 #%% Split Train, Test
 data = dataset.as_numpy(MASK_VALUE)[:, :, :2].astype('float32')
 encoder, labels = dataset.get_labels_as_numpy(onehot=True)
-labels = labels.astype('float32')
+labels = labels.astype('float32').todense()
 X_train, X_test, Y_train, Y_test = train_test_split(data, labels, shuffle=True, stratify=labels, random_state=42)
 
 
@@ -37,7 +37,7 @@ model.add(LSTM(256, return_sequences=True))
 model.add(Dropout(0.5))
 model.add(LSTM(256))
 model.add(Dropout(0.5))
-#todo add another dense layer
+model.add(Dense(128))
 model.add(Dense(10))
 model.add(Activation('softmax'))
 
