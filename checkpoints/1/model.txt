@@ -1,0 +1,24 @@
+Data:
+- mean centering
+- unit normalized
+- pressure normalized
+- X, Y
+- Masked with -2.0
+- Train, Valid, Test split
+  - (Train,Valid):Test == 2:1
+  - Train:Valid == 2:1
+
+
+Model:
+- Masking(-2.0)
+- LSTM(256)
+- Dropout(0.5)
+- LSTM(256)
+- Dropout(0.5)
+- Dense(10)
+- Softmax
+
+Training:
+- Epochs 15
+- Loss: categorical crossentropy
+- Optimizer: Adam
