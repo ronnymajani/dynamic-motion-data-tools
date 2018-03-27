@@ -41,8 +41,9 @@ def apply_mean_centering(digit, inplace=False):
 
 
 def apply_unit_distance_normalization(digit, inplace=False):
-    """ Scales the coordinates (using minMax scaling) so the maximum euclidian distance to any of the points
-    in the given digit is set to 1.0
+    """ Scales the coordinates (using minMax scaling) so the maximum euclidian distance from the 
+    mean (center of the points) to any of the points in the given digit is set to 1.0 
+    and  the minimum is set to -1.0
     @param digit: The digit to apply the transformationt to
     @param inplace: If True, the operation is performed inplace
                     (this only works if digit is already a numpy array)
@@ -69,6 +70,38 @@ def apply_unit_distance_normalization(digit, inplace=False):
     digit[:, y_idx] = y / scale
     return digit
 
+
+
+def generate_digit_derivative(digit, normalize=False):
+    """ Generates the given digit X, Y data into derivatives (change of X, Y values each timestep)
+    @param digit: The digit to generate the derivative from
+    @param normalize: If set to True, the generated derivative vectors will be normalized to unit length,
+    stripping them of any magnitude information.
+    @returns The generated 
+    """
+    if not isinstance(digit, np.ndarray):
+        digit = np.array(digit)
+
+    x_idx = DataSetContract.DigitSet.Frame.indices['X']
+    y_idx = DataSetContract.DigitSet.Frame.indices['Y']
+
+    digit = digit[:, [x_idx, y_idx]]  # select only the X and Y values    
+    rotated_digit = np.roll(digit, -1)  # the digit frames one time step ahead
+    derivative = rotated_digit - digit
+    derivative = derivative[:-1]  # drop last element as it is connecting the first and last frame
+    
+    if normalize:
+        dx = derivative[:, 0]
+        dy = derivative[:, 1]
+        
+        squared_dist = np.square(dx) + np.square(dy)
+        unit = np.sqrt(squared_dist)
+        
+        dx /= unit
+        dy /= unit
+        
+    return derivative
+    
 
 
 
