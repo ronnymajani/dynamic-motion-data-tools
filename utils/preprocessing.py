@@ -107,6 +107,13 @@ def convert_xy_to_derivative(digit, normalize=False, inplace=False):
     return digit
     
 
+def reverse_digit_sequence(digit, inplace=False):
+    """ Reverses the order of the frames in the given digit
+    @returns a reversed sequence version of the given digit
+    """
+    if not isinstance(digit, np.ndarray) or inplace == False:
+        digit = np.array(digit)
+    return digit[::-1]
 
 
 

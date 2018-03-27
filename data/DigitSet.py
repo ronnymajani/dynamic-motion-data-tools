@@ -56,16 +56,15 @@ class DigitSet():
             digit = self.data[i]
             res[i, :len(digit), :] = digit
         return res
-    
             
     def apply(self, operation):
-        """Apply a given digit operation to each digit in the digitset
+        """ Apply a given digit operation to each digit in the digitset
         This function is for operations that work on individual digits"""
         res = []
         for digit in self.data:
             res.append(operation(digit))
         self.data = res
-            
+        
     def load(self, filename):
         """Load digitset data from the given file"""
         if self.name is not None:

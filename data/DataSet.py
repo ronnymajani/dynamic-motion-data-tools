@@ -38,6 +38,17 @@ class DataSet(object):
         for digit in self.data:
             res.append(operation(digit))
         self.data = res
+        
+    def expand(self, operation):
+        """ Apply a given digit operation to each digit in the dataset and append the result
+        to the dataset
+        @param operation: a function to apply to each digit. should take one argument, which is
+        a single digit, and should return a digit.
+        """
+        data_len_pre_expand = len(self.data)
+        for digit_idx in range(data_len_pre_expand):
+            self.data.append(operation(self.data[digit_idx]))
+            self.labels.append(self.labels[digit_idx])
             
     def as_numpy(self, mask_value):
         """ Returns the entire digitset as a numpy array in the shape

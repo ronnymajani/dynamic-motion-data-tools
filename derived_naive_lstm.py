@@ -13,6 +13,7 @@ dataset = DataSet(folder)
 dataset.apply(apply_mean_centering)
 dataset.apply(apply_unit_distance_normalization)
 dataset.apply(lambda digit: normalize_pressure_value(digit, 512))
+dataset.expand(reverse_digit_sequence)
 # dataset.apply(lambda digit: convert_xy_to_derivative(digit, normalize=False))
 dataset.apply(lambda digit: convert_xy_to_derivative(digit, normalize=True))
 
@@ -39,18 +40,18 @@ from keras.callbacks import ModelCheckpoint
 model = Sequential()
 model.add(Masking(mask_value=MASK_VALUE, input_shape=(X_train.shape[1:])))
 #model.add(LSTM(128, return_sequences=True))
-#model.add(Dropout(0.5))
-model.add(LSTM(128, return_sequences=True))
+model.add(LSTM(256, return_sequences=True))
+model.add(Dropout(0.5))
 model.add(LSTM(128))
-#model.add(Dropout(0.2))
-# model.add(Dense(64))
+model.add(Dropout(0.5))
+model.add(Dense(32, activation='relu'))
 model.add(Dense(10))
 model.add(Activation('softmax'))
 
 #%%
 from keras.optimizers import Adam
-save_path = 'checkpoints/6'
-save_prefix = 'naive-lstm-dense-derived-normalized'
+save_path = 'checkpoints/7'
+save_prefix = 'lstm-dropout-dense-derivative-reverse'
 
 import os
 if not os.path.exists(save_path):
@@ -62,6 +63,9 @@ checkpointer = ModelCheckpoint(save_filename, monitor='val_categorical_accuracy'
 optimizer = Adam()
 
 model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['categorical_accuracy'])
+
+print(model.summary())
+
 model.fit(x=X_train, y=Y_train, epochs=30, verbose=1, callbacks=[checkpointer], validation_data=(X_valid, Y_valid))
 
 test_score = tuple(model.evaluate(X_test, Y_test))
