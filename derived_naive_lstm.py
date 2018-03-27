@@ -14,12 +14,13 @@ dataset.apply(apply_mean_centering)
 dataset.apply(apply_unit_distance_normalization)
 dataset.apply(lambda digit: normalize_pressure_value(digit, 512))
 # dataset.apply(lambda digit: convert_xy_to_derivative(digit, normalize=False))
-#dataset.apply(lambda digit: convert_xy_to_derivative(digit, normalize=True))
+dataset.apply(lambda digit: convert_xy_to_derivative(digit, normalize=True))
 
 #%% Split Train, Test
 from keras.preprocessing.sequence import pad_sequences
 #data = dataset.as_numpy(MASK_VALUE)[:, :, :2].astype('float32')
 data = pad_sequences(dataset.data, dtype='float32', padding='pre', truncating='post', value=MASK_VALUE)
+data = data[:, :, :2]
 encoder, labels = dataset.get_labels_as_numpy(onehot=True)
 labels = labels.astype('float32').todense()
 X_train_valid, X_test, Y_train_valid, Y_test = train_test_split(data, labels, shuffle=True, stratify=labels, random_state=42)
