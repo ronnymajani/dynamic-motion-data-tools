@@ -1,0 +1,45 @@
+2018-04-07 21:33:02
+
+----------
+
+* [modify] (apply_mean_centering):
+	Mean Centering
+
+* [modify] (apply_unit_distance_normalization):
+	Unit Distance Normalization
+
+* [modify] (normalize_pressure_value):
+	Pressure Values Normalization
+
+* [modify] (spline_interpolate_and_resample):
+	B-Spine Interpolation and Resampling (Warning: Deletes time and pressure features!)
+
+* [expand] (reverse_digit_sequence):
+	Reverse Order of Digit Sequences
+
+----------
+
+Optimizer: <class 'keras.optimizers.Adam'>
+Number of samples used in spline interpolation and resampling: 200
+Batch Size: 300
+Number of Epochs: 30
+
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+gru_1 (GRU)                  (None, 200, 256)          198912    
+_________________________________________________________________
+gru_2 (GRU)                  (None, 256)               393984    
+_________________________________________________________________
+dense_7 (Dense)              (None, 10)                2570      
+_________________________________________________________________
+activation_7 (Activation)    (None, 10)                0         
+=================================================================
+Total params: 595,466
+Trainable params: 595,466
+Non-trainable params: 0
+_________________________________________________________________
+
+
+----------
+
