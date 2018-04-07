@@ -124,6 +124,15 @@ def reverse_digit_sequence(digit, inplace=False):
 
 @preprocessingOperation("B-Spine Interpolation and Resampling (Warning: Deletes time and pressure features!)")
 def spline_interpolate_and_resample(digit, num_samples):
+    """ Performs B-Spline interpolation on the given digit, then resamples new uniformly distributed points from the
+    newly calculated spline, and sets returns a new digit with the resampled X, Y values.
+    @note: this function completely ignores and disposes of the other features (time and pressure)
+        and the resulting digit only contains X and Y
+    @param[in] digit: The digit to interpolate and resample from
+    @param[in] num_samples: The number of samples to take from the calculated spline.
+    @returns a 2D array, with its first column set to the resulting X values,
+        and its Y column set to the corresponding Y values
+    """
     if not isinstance(digit, np.ndarray):
         digit = np.array(digit)
         
