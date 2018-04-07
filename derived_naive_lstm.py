@@ -3,14 +3,14 @@
 #%%
 # Constants
 PARAM_NUM_EPOCHS = 30
-PARAM_BATCH_SIZE = 32
-NUM_SAMPLES = 300
+PARAM_BATCH_SIZE = 300
+NUM_SAMPLES = 200
 
 # Paths
 dataset_folder_path = 'temp'
 tensorboard_logs_path = "logs"
 checkpoints_save_folder_path = 'checkpoints'
-checkpoints_save_prefix = 'cudnnlstm-spline'
+checkpoints_save_prefix = 'gru-spline'
 
 #%% Prepare Data
 # Imports
@@ -44,18 +44,15 @@ X_train, X_valid, Y_train, Y_valid = train_test_split(X_train_valid, Y_train_val
 #%% Build Model
 # Imports
 from keras import Sequential
-from keras.layers import LSTM, CuDNNLSTM
+from keras.layers import GRU
 from keras.layers import Dense
 from keras.layers import Activation
-from keras.layers import Dropout
 from keras.optimizers import Adam
 
 # Model
 model = Sequential()
-model.add(LSTM(256, return_sequences=True, input_shape=(X_train.shape[1:])))
-model.add(Dropout(0.5))
-model.add(LSTM(256))
-model.add(Dropout(0.5))
+model.add(GRU(256, return_sequences=True, input_shape=(X_train.shape[1:])))
+model.add(GRU(256))
 model.add(Dense(10))
 model.add(Activation('softmax'))
 
