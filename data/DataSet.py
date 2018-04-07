@@ -4,7 +4,7 @@ import os
 import warnings
 import copy
 import numpy as np
-from utils.decorators import preprocessingFunction
+from utils.decorators import preprocessingOperation
 from data.contract import DataSetContract
 from data.DigitSet import DigitSet
 from sklearn.preprocessing import OneHotEncoder
@@ -101,7 +101,7 @@ class DataSet(object):
         res._is_dt = self._is_dt
         return res
     
-    @preprocessingFunction("Convert time feature from 'dt' (time difference between points) to total Elapsed Time")
+    @preprocessingOperation("Convert time feature from 'dt' (time difference between points) to total Elapsed Time")
     def convert_dt_to_t(self):
         """ Converts the time feature from 'dt' (the difference between each point and its previous point)
         to 't' (the time elapsed since the first point in this sequence) """

@@ -3,10 +3,11 @@
 
 import numpy as np
 from data.contract import DataSetContract
-from utils.decorators import preprocessingFunction
+from utils.decorators import preprocessingOperation
+from scipy import interpolate, ndimage
 
 
-@preprocessingFunction("Pressure Values Normalization")
+@preprocessingOperation("Pressure Values Normalization")
 def normalize_pressure_value(digit, max_pressure_val=512, inplace=False):
     """ Normalizes the pressure value to the range [0.0, 1.0] given the maximum pressure value possible """
     p_idx = DataSetContract.DigitSet.Frame.indices['P']
@@ -16,7 +17,7 @@ def normalize_pressure_value(digit, max_pressure_val=512, inplace=False):
     return digit
 
 
-@preprocessingFunction("Mean Centering")
+@preprocessingOperation("Mean Centering")
 def apply_mean_centering(digit, inplace=False):
     """ Translates the coordinates X, Y so their mean is aligned with the origin (0,0)
     @param digit: The digit to apply the transformationt to
@@ -43,7 +44,7 @@ def apply_mean_centering(digit, inplace=False):
     return digit
 
 
-@preprocessingFunction("Unit Distance Normalization")
+@preprocessingOperation("Unit Distance Normalization")
 def apply_unit_distance_normalization(digit, inplace=False):
     """ Scales the coordinates (using minMax scaling) so the maximum euclidian distance from the 
     mean (center of the points) to any of the points in the given digit is set to 1.0 
@@ -75,7 +76,7 @@ def apply_unit_distance_normalization(digit, inplace=False):
     return digit
 
 
-@preprocessingFunction("Convert X, Y points to Derivatives")
+@preprocessingOperation("Convert (X, Y) points to Discrete Derivatives (dx, dy)")
 def convert_xy_to_derivative(digit, normalize=False, inplace=False):
     """ Converts the given digit's X, Y data into derivatives (change of X, Y values each timestep)
     @param digit: The digit to generate the derivative from
@@ -111,7 +112,7 @@ def convert_xy_to_derivative(digit, normalize=False, inplace=False):
     return digit
     
 
-@preprocessingFunction("Reverse Order of Digit Sequences")
+@preprocessingOperation("Reverse Order of Digit Sequences")
 def reverse_digit_sequence(digit, inplace=False):
     """ Reverses the order of the frames in the given digit
     @returns a reversed sequence version of the given digit
@@ -121,7 +122,31 @@ def reverse_digit_sequence(digit, inplace=False):
     return digit[::-1]
 
 
-
-
+@preprocessingOperation("B-Spine Interpolation and Resampling (Warning: Deletes time and pressure features!)")
+def spline_interpolate_and_resample(digit, num_samples):
+    if not isinstance(digit, np.ndarray):
+        digit = np.array(digit)
+        
+    x_idx = DataSetContract.DigitSet.Frame.indices['X']
+    y_idx = DataSetContract.DigitSet.Frame.indices['Y']
+    # Delete identical points to not get an error from the spline function
+    # https://stackoverflow.com/questions/47948453/scipy-interpolate-splprep-error-invalid-inputs/47949170#47949170
+    x = digit[:, x_idx]
+    y = digit[:, y_idx]
+    x = x.flatten()
+    y = y.flatten()
+    okay = np.where(np.abs(np.diff(x)) + np.abs(np.diff(y)) > 0)
+    xp = np.r_[x[okay], x[-1], x[0]]
+    yp = np.r_[y[okay], y[-1], y[0]]
+    jump = np.sqrt(np.diff(xp)**2 + np.diff(yp)**2) 
+    smooth_jump = ndimage.gaussian_filter1d(jump, 5, mode='wrap')  # window of size 5 is arbitrary
+    limit = 2*np.median(smooth_jump)    # factor 2 is arbitrary
+    xn, yn = xp[:-1], yp[:-1]
+    xn = xn[(jump > 0) & (smooth_jump < limit)]
+    yn = yn[(jump > 0) & (smooth_jump < limit)]
+    # Generate B-Spline
+    tck, u = interpolate.splprep([xn, yn], s=0)
+    xi, yi = interpolate.splev(np.linspace(0, 1, num_samples), tck)
+    return np.array([xi, yi]).T
 
 

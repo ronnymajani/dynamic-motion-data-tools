@@ -3,7 +3,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import interpolate, ndimage
+from utils.preprocessing import spline_interpolate_and_resample
 
 
 
@@ -33,29 +33,21 @@ def show_digit(digit, label=None, show_points=True, show_lines=True, use_time_as
     x = x.flatten()
     y = y.flatten()
     
-    # Delete identical points to not get an error from the spline function
-    # https://stackoverflow.com/questions/47948453/scipy-interpolate-splprep-error-invalid-inputs/47949170#47949170
-    okay = np.where(np.abs(np.diff(x)) + np.abs(np.diff(y)) > 0)
-    xp = np.r_[x[okay], x[-1], x[0]]
-    yp = np.r_[y[okay], y[-1], y[0]]
-    jump = np.sqrt(np.diff(xp)**2 + np.diff(yp)**2) 
-    smooth_jump = ndimage.gaussian_filter1d(jump, 5, mode='wrap')  # window of size 5 is arbitrary
-    limit = 2*np.median(smooth_jump)    # factor 2 is arbitrary
-    xn, yn = xp[:-1], yp[:-1]
-    xn = xn[(jump > 0) & (smooth_jump < limit)]
-    yn = yn[(jump > 0) & (smooth_jump < limit)]
-    # Generate B-Spline
-    tck, u = interpolate.splprep([xn, yn], s=0)
-    xi, yi = interpolate.splev(np.linspace(0, 1, 1000), tck)
-    
-    # plot
     ax = plt.gca()
+    
+    if show_lines:
+        xi, yi = spline_interpolate_and_resample(data, 1000)
+        y_max = max(y.max(), yi.max()) + padding
+        y_min = min(y.min(), yi.min()) - padding
+        x_max = max(x.max(), xi.max()) + padding
+        x_min = min(x.min(), xi.min()) - padding
+    else:
+        y_max = y.max() + padding
+        y_min = y.min() - padding
+        x_max = x.max() + padding
+        x_min = x.min() - padding   
     # Set the Y and X axis limits
     # we invert the Y axis (our coordinates assume X, Y is the top left corner)
-    y_max = max(y.max(), yi.max()) + padding
-    y_min = min(y.min(), yi.min()) - padding
-    x_max = max(x.max(), xi.max()) + padding
-    x_min = min(x.min(), xi.min()) - padding
     ax.set_xlim(x_min, x_max)
     ax.set_ylim(y_max, y_min)
     # Preserve the aspect ratio and scale between the X and Y axis
@@ -72,7 +64,7 @@ def show_digit(digit, label=None, show_points=True, show_lines=True, use_time_as
     # Show the points of the digit
     if show_points:
         if use_time_as_color:
-            c = t.flatten()
+            c = data[:, 3].flatten()
         else:
             c = np.arange(len(x))
         plt.scatter(x, y, c=c, cmap="inferno")

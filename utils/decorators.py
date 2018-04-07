@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-# Data Preprocessing Function
-def preprocessingFunction(name):
+# Data Preprocessing Operation
+def preprocessingOperation(name):
     def wrap(f):
         f.operation_name = name
         return f
