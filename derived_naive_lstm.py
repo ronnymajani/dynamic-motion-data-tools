@@ -122,7 +122,7 @@ with open(os.path.join(checkpoints_dir, "model.txt"), "w") as fd:
     fd.write("\n")
 
 
-model#%% Callbacks
+#%% Callbacks
 # Imports
 import tfcallback
 from keras.callbacks import ModelCheckpoint
