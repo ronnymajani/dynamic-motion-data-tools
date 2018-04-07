@@ -93,6 +93,12 @@ test_score = tuple(model.evaluate(X_test, Y_test))
 print("Test Loss: %.3f, Test Acc: %.3f%%" % (test_score[0], test_score[1] * 100))
 
 #%%
+continue_params = fit_params.copy()
+continue_params['epochs'] = 60
+continue_params['initial_epoch'] = 30
+model.fit(**continue_params)
+
+#%%
 #def predict(digit, model):
 #    import utils.preprocessing as preprocessing
 #    import numpy as np
