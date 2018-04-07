@@ -3,8 +3,10 @@
 
 import numpy as np
 from data.contract import DataSetContract
+from utils.decorators import preprocessingFunction
 
 
+@preprocessingFunction("Pressure Values Normalization")
 def normalize_pressure_value(digit, max_pressure_val=512, inplace=False):
     """ Normalizes the pressure value to the range [0.0, 1.0] given the maximum pressure value possible """
     p_idx = DataSetContract.DigitSet.Frame.indices['P']
@@ -14,6 +16,7 @@ def normalize_pressure_value(digit, max_pressure_val=512, inplace=False):
     return digit
 
 
+@preprocessingFunction("Mean Centering")
 def apply_mean_centering(digit, inplace=False):
     """ Translates the coordinates X, Y so their mean is aligned with the origin (0,0)
     @param digit: The digit to apply the transformationt to
@@ -40,6 +43,7 @@ def apply_mean_centering(digit, inplace=False):
     return digit
 
 
+@preprocessingFunction("Unit Distance Normalization")
 def apply_unit_distance_normalization(digit, inplace=False):
     """ Scales the coordinates (using minMax scaling) so the maximum euclidian distance from the 
     mean (center of the points) to any of the points in the given digit is set to 1.0 
@@ -71,7 +75,7 @@ def apply_unit_distance_normalization(digit, inplace=False):
     return digit
 
 
-
+@preprocessingFunction("Convert X, Y points to Derivatives")
 def convert_xy_to_derivative(digit, normalize=False, inplace=False):
     """ Converts the given digit's X, Y data into derivatives (change of X, Y values each timestep)
     @param digit: The digit to generate the derivative from
@@ -107,6 +111,7 @@ def convert_xy_to_derivative(digit, normalize=False, inplace=False):
     return digit
     
 
+@preprocessingFunction("Reverse Order of Digit Sequences")
 def reverse_digit_sequence(digit, inplace=False):
     """ Reverses the order of the frames in the given digit
     @returns a reversed sequence version of the given digit
@@ -114,8 +119,6 @@ def reverse_digit_sequence(digit, inplace=False):
     if not isinstance(digit, np.ndarray) or inplace == False:
         digit = np.array(digit)
     return digit[::-1]
-
-
 
 
 

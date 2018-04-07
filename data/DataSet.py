@@ -4,9 +4,11 @@ import os
 import warnings
 import copy
 import numpy as np
+from utils.decorators import preprocessingFunction
 from data.contract import DataSetContract
 from data.DigitSet import DigitSet
 from sklearn.preprocessing import OneHotEncoder
+import functools
 
 #todo: add functions for loading and storing information about dataset
 #todo: add functions for loading a unified dataset file instead of many digitsets
@@ -16,6 +18,7 @@ class DataSet(object):
         self.data = None
         self.labels = None
         self._is_dt = True
+        self._applied_operations = []
         if folder is not None:
             self.load(folder)
     
@@ -38,6 +41,9 @@ class DataSet(object):
         for digit in self.data:
             res.append(operation(digit))
         self.data = res
+        # save name of applied operation
+        self._record_operation("modify", operation)
+        
         
     def expand(self, operation):
         """ Apply a given digit operation to each digit in the dataset and append the result
@@ -49,6 +55,9 @@ class DataSet(object):
         for digit_idx in range(data_len_pre_expand):
             self.data.append(operation(self.data[digit_idx]))
             self.labels.append(self.labels[digit_idx])
+            
+        # save name of applied operation
+        self._record_operation("expand", operation)
             
     def as_numpy(self, mask_value):
         """ Returns the entire digitset as a numpy array in the shape
@@ -92,6 +101,7 @@ class DataSet(object):
         res._is_dt = self._is_dt
         return res
     
+    @preprocessingFunction("Convert time feature from 'dt' (time difference between points) to total Elapsed Time")
     def convert_dt_to_t(self):
         """ Converts the time feature from 'dt' (the difference between each point and its previous point)
         to 't' (the time elapsed since the first point in this sequence) """
@@ -100,6 +110,7 @@ class DataSet(object):
             for i in range(1, len(digit)):
                 digit[i][dt_idx] += digit[i-1][dt_idx]
         self._is_dt = False
+        self._record_operation(self.convert_dt_to_t)
         return self
     
     def time_is_dt(self):
@@ -108,6 +119,32 @@ class DataSet(object):
         @returns False if the time feature of the digits is measured in 't' (the time elapsed since the first point in this sequence)
         """
         return self._is_dt
+    
+    def get_recorded_operations(self):
+        """ Returns a list of descriptions of the operations applied so far on this dataset """
+        return self._applied_operations.copy()
+
+    def _record_operation(self, operation_type, operation):
+        """ Record an operation applied to the DataSet 
+        It's expected that any applied operation should have an attribute 'operation_name'
+        Otherwise it will be recorded as '[Unknown Operation: `function name`]'
+        """
+        # If a partial function was passed using functools, extract the actual function that was used to construt the partial
+        if operation.__class__ == functools.partial:
+            operation = operation.func
+            
+        newstr = ""
+        # Operation Assigned Type
+        newstr += "* [%s]" % operation_type
+        # Operation Function's Name
+        newstr += " (%s):\n\t" % operation.__name__
+        # Operation's Assigned Name
+        try:
+            newstr += "%s" % operation.operation_name
+        except AttributeError:
+            newstr += "Unknown Operation!"
+        # Save operation record
+        self._applied_operations.append(newstr)
 
 
 
