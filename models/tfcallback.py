@@ -8,7 +8,7 @@ Created on Sat Apr  7 15:21:11 2018
 import keras.callbacks as callbacks
 import tensorflow as tf
 
-class TB(callbacks.TensorBoard):
+class TensorBoardCallback(callbacks.TensorBoard):
     def __init__(self, log_every=1, **kwargs):
         super().__init__(**kwargs)
         self.log_every = log_every

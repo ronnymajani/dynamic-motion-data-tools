@@ -124,14 +124,21 @@ class DataSet(object):
         """ Returns a list of descriptions of the operations applied so far on this dataset """
         return self._applied_operations.copy()
 
-    def _record_operation(self, operation_type, operation):
+    def _record_operation(self, operation_type, operation, info=None):
         """ Record an operation applied to the DataSet 
         It's expected that any applied operation should have an attribute 'operation_name'
         Otherwise it will be recorded as '[Unknown Operation: `function name`]'
         """
+        misc = ""
+            
         # If a partial function was passed using functools, extract the actual function that was used to construt the partial
         if operation.__class__ == functools.partial:
+            misc += "\n\t>> args: " + str(operation.args)
+            misc += "\n\t>> keywords: " + str(operation.keywords)
             operation = operation.func
+        
+        if info is not None:
+            misc += "\n\t>>> info: " + info
             
         newstr = ""
         # Operation Assigned Type
@@ -143,6 +150,7 @@ class DataSet(object):
             newstr += "%s" % operation.operation_name
         except AttributeError:
             newstr += "Unknown Operation!"
+        newstr += misc
         # Save operation record
         self._applied_operations.append(newstr)
 
