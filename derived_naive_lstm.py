@@ -8,10 +8,6 @@ NUM_SAMPLES = 200
 
 # Paths
 dataset_folder_path = 'temp'
-tensorboard_logs_path = "logs"
-checkpoints_save_folder_path = 'checkpoints'
-checkpoints_save_prefix = 'gru-spline'
-
 #%% Prepare Data
 # Imports
 from utils.preprocessing import *

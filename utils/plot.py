@@ -74,17 +74,26 @@ def show_digit(digit, label=None, show_points=True, show_lines=True, use_time_as
         plt.plot(xi, yi, '-', c="#1f77b4ff")
 
 
-def show_mat(mat, xlabel="", ylabel="", title=None, 
-             uniform_ticks=False, hide_ticks=False, show_grid=False, 
-             cmap=matplotlib.cm.Spectral, show_colorbar=False):
+def show_mat(mat, xlabel="", ylabel="", title=None, uniform_ticks=False, 
+             hide_ticks=False, show_grid=False, show_vals=False, show_vals_as_int=False,
+             show_colorbar=False, cmap=matplotlib.cm.Spectral):
     ylen = len(mat)
     xlen = len(mat[0])
     # show matrix
     plt.matshow(mat, cmap=cmap)
-    if show_colorbar:
-        plt.colorbar()
     ax = plt.gca()
     fig = plt.gcf()
+    # show values in grid
+    if show_vals:
+        if show_vals_as_int:
+            fmt = "{:d}"
+        else:
+            fmt = "{:0.1f}"
+        for (i, j), z in np.ndenumerate(mat):
+            ax.text(j, i, fmt.format(z), ha='center', va='center')
+    # show colorbar
+    if show_colorbar:
+        plt.colorbar()
     # set label position
     ax.xaxis.set_label_position('top')
     # set labels

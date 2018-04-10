@@ -23,7 +23,8 @@ def get_confusion_matrix(Y_true, Y_predicted, y_true_is_one_hot=True, y_predicte
     
     if plot:
         utils.plot.show_mat(confmat, xlabel="True", ylabel="Predicted", title="Confusion Matrix", 
-                            show_grid=True, show_colorbar=True, uniform_ticks=True, hide_ticks=True)
+                            show_grid=True, show_colorbar=True, uniform_ticks=True, hide_ticks=True, 
+                            show_vals=True, show_vals_as_int=True)
     return confmat
         
     
