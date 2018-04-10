@@ -20,6 +20,7 @@ class NaiveGRU(ModelTemplate):
     
     def __init__(self, input_shape, **kwargs):
         ModelTemplate.__init__(self, input_shape, **kwargs)
+        self.name = NaiveGRU.NAME
     
     def build(self):
         # Model

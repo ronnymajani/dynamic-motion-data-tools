@@ -57,7 +57,8 @@ class ModelTemplate(object):
         with open(os.path.join(self.checkpoints_dir, filename), "w") as fd:
             sep = "\n\n----------\n\n"
             timestamp = datetime.datetime.fromtimestamp(self.timestamp).strftime('%Y-%m-%d %H:%M:%S')
-            fd.write(timestamp)
+            fd.write(self.name)
+            fd.write("\n" + timestamp)
             fd.write(sep)
             fd.write("\n\n".join(recorded_operations))
             fd.write(self.__str__())
