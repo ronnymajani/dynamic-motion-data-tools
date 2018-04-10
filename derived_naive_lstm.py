@@ -28,13 +28,15 @@ dataset.expand(reverse_digit_sequence)
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-data = np.array(dataset.data)
+X_train_valid = np.array(dataset.train_data)
+X_test = np.array(dataset.test_data)
 # Convert labels to numpy array and OneHot encode them
-encoder, labels = dataset.get_labels_as_numpy(onehot=True)
-labels = labels.astype('float32').todense()
+encoder, train_valid_labels, Y_test = dataset.get_labels_as_numpy(onehot=True)
+train_valid_labels = train_valid_labels.astype('float32').todense()
+Y_test = Y_test.astype('float32').todense()
 # Split Data
-X_train_valid, X_test, Y_train_valid, Y_test = train_test_split(data, labels, shuffle=True, stratify=labels, random_state=42)
-X_train, X_valid, Y_train, Y_valid = train_test_split(X_train_valid, Y_train_valid, shuffle=True, stratify=Y_train_valid, random_state=42)
+X_train, X_valid, Y_train, Y_valid = train_test_split(X_train_valid, train_valid_labels, shuffle=True, stratify=train_valid_labels, random_state=42)
+#X_train, X_valid, Y_train, Y_valid = train_test_split(X_train_valid, Y_train_valid, shuffle=True, stratify=Y_train_valid, random_state=42)
 
 
 #%% Model Training

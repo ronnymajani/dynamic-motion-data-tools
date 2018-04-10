@@ -15,100 +15,138 @@ import functools
 
 class DataSet(object):
     def __init__(self, folder=None):
-        self.data = None
-        self.labels = None
+        self.train_data = None
+        self.train_labels = None
+        self.test_data = None
+        self.test_labels = None
         self._is_dt = True
         self._applied_operations = []
         if folder is not None:
             self.load(folder)
     
-    def load(self, folder):
-        """ Load a set of digitsets in the given folder """
-        if self.data is not None:
+    def load(self, folder, test_set_percentage=0.3333):
+        """ Load a set of digitsets in the given folder, and split them into train and test sets
+        @param[in] test_set_percentage: The percentage of the data that will be assigned to the test set
+        @param[optional] random_seed: The seed to use for randomization
+        """
+        if self.train_data is not None or self.test_data is not None:
             warnings.warn("Loading a new dataset into a non empty DataSet object")
+        if test_set_percentage >= 1.0:
+            raise ValueError("Test Set percentage too high!")
         files = [os.path.join(folder, file) for file in os.listdir(folder)]
-        self.data = []
-        self.labels = []
+        # split files into train and test
+        files = np.random.permutation(files)
+        num_users = len(files)
+        split_index = round(num_users * (1.0 - test_set_percentage))
+        train_files = files[:split_index]
+        test_files = files[split_index:]
+        self._load_train_data(train_files)
+        self._load_test_data(test_files)
+        
+    def _load_train_data(self, files):
+        self.train_data = []
+        self.train_labels = []
         for file in files:
-            digitset = DigitSet(file)
-            self.data += digitset.data
-            self.labels += digitset.labels
+            digitset = DigitSet(file) 
+            self.train_data += digitset.data
+            self.train_labels += digitset.labels
+    
+    def _load_test_data(self, files):
+        self.test_data = []
+        self.test_labels = []
+        for file in files:
+            digitset = DigitSet(file) 
+            self.test_data += digitset.data
+            self.test_labels += digitset.labels
             
-    def apply(self, operation):
+    def apply(self, operation, apply_to_test_set=True):
         """Apply a given digit operation to each digit in the digitset
-        This function is for operations that work on individual digits"""
+        This function is for operations that work on individual digits
+        @param[optional] apply_to_test_set: if True, the given operation will also be applied to the test set
+        """
         res = []
-        for digit in self.data:
+        for digit in self.train_data:
             res.append(operation(digit))
-        self.data = res
+        self.train_data = res
+        
+        if apply_to_test_set:
+            res = []
+            for digit in self.test_data:
+                res.append(operation(digit))
+            self.test_data = res
+            
         # save name of applied operation
-        self._record_operation("modify", operation)
+        optype = "modify:train"
+        if apply_to_test_set:
+            optype += "|test"
+        self._record_operation(optype, operation)
         
         
-    def expand(self, operation):
+    def expand(self, operation, apply_to_test_set=True):
         """ Apply a given digit operation to each digit in the dataset and append the result
         to the dataset
         @param operation: a function to apply to each digit. should take one argument, which is
         a single digit, and should return a digit.
         """
-        data_len_pre_expand = len(self.data)
+        data_len_pre_expand = len(self.train_data)
         for digit_idx in range(data_len_pre_expand):
-            self.data.append(operation(self.data[digit_idx]))
-            self.labels.append(self.labels[digit_idx])
+            self.train_data.append(operation(self.train_data[digit_idx]))
+            self.train_labels.append(self.train_labels[digit_idx])
+            
+        if apply_to_test_set:
+            data_len_pre_expand = len(self.test_data)
+            for digit_idx in range(data_len_pre_expand):
+                self.test_data.append(operation(self.test_data[digit_idx]))
+                self.test_labels.append(self.test_labels[digit_idx])
             
         # save name of applied operation
-        self._record_operation("expand", operation)
-            
-    def as_numpy(self, mask_value):
-        """ Returns the entire digitset as a numpy array in the shape
-        [number of samples , maximum sequence length , length of single frame]
-        The function also pads sequences less than the maximum sequence length with the given
-        masking value.
-        """
-        max_len = 0
-        for digit in self.data:
-            max_len = max(max_len, len(digit))
-        # create empty numpy array 
-        res = np.empty((len(self.data), max_len, len(DataSetContract.DigitSet.Frame.columns)))
-        res.fill(mask_value)
-        # fill in array
-        for i in range(len(self.data)):
-            digit = self.data[i]
-            res[i, :len(digit), :] = digit
-        return res    
+        optype = "expand:train"
+        if apply_to_test_set:
+            optype += "|test"
+        self._record_operation(optype, operation)
     
     def get_labels_as_numpy(self, onehot=False):
         """ Returns the labels as a numpy ndarray
         if onehot is set to True, it will onehot encode the labels using scikit learn's OneHotEncoder
         and will return both the encoder and the encoded labels
-        @returns ndarray of labels if onehot is False
-        @returns (OneHotEncoder, ndarray of labels) if onehot is True
+        @returns (ndarray of train labels, ndarray of test labels) if onehot is False
+        @returns (OneHotEncoder, ndarray of train labels, ndarray of test labels) if onehot is True
         """
-        labels = np.array(self.labels).reshape(-1, 1)
+        train_labels = np.array(self.train_labels).reshape(-1, 1)
+        test_labels = np.array(self.test_labels).reshape(-1, 1)
         if onehot:
             encoder = OneHotEncoder()
-            labels = encoder.fit_transform(labels)
-            return encoder, labels
+            train_labels = encoder.fit_transform(train_labels)
+            test_labels = encoder.fit_transform(test_labels)
+            return encoder, train_labels, test_labels
         else:
-            return labels
+            return train_labels, test_labels
             
     
     def copy(self):
         """Returns a copy of this dataset"""
         res = DataSet()
-        res.data = copy.copy(self.data)
-        res.labels = copy.copy(self.labels)
+        res.train_data = copy.copy(self.train_data)
+        res.test_data = copy.copy(self.test_data)
+        res.train_labels = copy.copy(self.train_labels)
+        res.test_labels = copy.copy(self.test_labels)
         res._is_dt = self._is_dt
         return res
     
     @preprocessingOperation("Convert time feature from 'dt' (time difference between points) to total Elapsed Time")
-    def convert_dt_to_t(self):
+    def convert_dt_to_t(self, apply_to_test_set=True):
         """ Converts the time feature from 'dt' (the difference between each point and its previous point)
         to 't' (the time elapsed since the first point in this sequence) """
         dt_idx = DataSetContract.DigitSet.Frame.indices['dt']
-        for digit in self.data:
+        
+        for digit in self.train_data:
             for i in range(1, len(digit)):
                 digit[i][dt_idx] += digit[i-1][dt_idx]
+                
+        for digit in self.test_data:
+            for i in range(1, len(digit)):
+                digit[i][dt_idx] += digit[i-1][dt_idx]
+                
         self._is_dt = False
         self._record_operation(self.convert_dt_to_t)
         return self
