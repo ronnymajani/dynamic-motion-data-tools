@@ -19,7 +19,8 @@ class ModelTemplate(object):
     
     def __init__(self, input_shape, checkpoints_save_path=None, tensorboard_logs_path=None):
         # generic attributes
-        self.name = "model"
+        self.name = "Model Template"
+        self.prefix = "model"
         self.timestamp = time.time()
         # folders and paths
         if checkpoints_save_path is None:
@@ -39,13 +40,14 @@ class ModelTemplate(object):
         self.callbacks = []
         self.input_shape = input_shape
         self.fit_params = None
-        # setup functions
+        
+    def initialize(self):
         self._setup_folders()
         self._setup_callbacks()
-        self.build()
+        self._build()
         
     # OVERRIDE THIS METHOD
-    def build(self):
+    def _build(self):
         raise NotImplementedError
     
     # OVERRIDE THIS METHOD
@@ -98,7 +100,7 @@ class ModelTemplate(object):
     def _setup_callbacks(self):
         """ Setup necessary callbacks """
         # Checkpoint for saving best models
-        save_filename = os.path.join(self.checkpoints_dir, self.name + "-{epoch:02d}-{val_categorical_accuracy:.2f}.hdf5")
+        save_filename = os.path.join(self.checkpoints_dir, self.prefix + "-{epoch:02d}-{val_categorical_accuracy:.2f}.hdf5")
         checkpointer = ModelCheckpoint(save_filename, monitor='val_categorical_accuracy', verbose=1, save_best_only=True, mode='max')
         self.callbacks.append(checkpointer)
         

@@ -74,11 +74,15 @@ def show_digit(digit, label=None, show_points=True, show_lines=True, use_time_as
         plt.plot(xi, yi, '-', c="#1f77b4ff")
 
 
-def show_mat(mat, xlabel="", ylabel="", title=None, uniform_ticks=False, hide_ticks=False, show_grid=False, cmap=matplotlib.cm.YlOrRd):
+def show_mat(mat, xlabel="", ylabel="", title=None, 
+             uniform_ticks=False, hide_ticks=False, show_grid=False, 
+             cmap=matplotlib.cm.Spectral, show_colorbar=False):
     ylen = len(mat)
     xlen = len(mat[0])
     # show matrix
     plt.matshow(mat, cmap=cmap)
+    if show_colorbar:
+        plt.colorbar()
     ax = plt.gca()
     fig = plt.gcf()
     # set label position
@@ -100,6 +104,6 @@ def show_mat(mat, xlabel="", ylabel="", title=None, uniform_ticks=False, hide_ti
     if show_grid:
         ax.set_xticks(np.arange(-.5, xlen, 1), minor=True)
         ax.set_yticks(np.arange(-.5, ylen, 1), minor=True)
-        ax.grid(which='minor', color='w', linestyle='-', linewidth=2)
+        ax.grid(which='minor', color='w', linestyle='-', linewidth=0.1)
 
 

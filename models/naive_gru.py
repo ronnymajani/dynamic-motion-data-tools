@@ -16,13 +16,15 @@ from models.model_template import ModelTemplate
 
 
 class NaiveGRU(ModelTemplate):
-    NAME = "Naive GRU"
+    NAME = "Naive Overfitting GRU"
+    PREFIX = "naive_overfit_gru"
     
     def __init__(self, input_shape, **kwargs):
         ModelTemplate.__init__(self, input_shape, **kwargs)
         self.name = NaiveGRU.NAME
+        self.prefix = NaiveGRU.PREFIX
     
-    def build(self):
+    def _build(self):
         # Model
         self.model = Sequential()
         self.model.add(GRU(256, return_sequences=True, input_shape=self.input_shape))

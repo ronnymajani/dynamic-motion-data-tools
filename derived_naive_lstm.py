@@ -47,6 +47,7 @@ from models.naive_gru import NaiveGRU
 mymodel = NaiveGRU(X_train.shape[1:])
 mymodel.batch_size = PARAM_BATCH_SIZE
 mymodel.num_epochs = PARAM_NUM_EPOCHS
+mymodel.initialize()
 print(mymodel)
 
 #%% Save Model Summary
@@ -60,11 +61,11 @@ mymodel.train(X_train, Y_train, X_valid, Y_valid)
 from utils.evaluation import get_evaluation_metrics, get_confusion_matrix
 #Evaluate Model
 # Test Score
-test_score = tuple(mymodel.model.evaluate(X_test, Y_test))
+test_score = tuple(model.evaluate(X_test, Y_test))
 print("Test Loss: %.3f, Test Acc: %.3f%%" % (test_score[0], test_score[1] * 100))
 
 # Recall, Precision, F1_Score on Validation set
-Y_predicted_valid = mymodel.model.predict_classes(X_valid, verbose=1)
+Y_predicted_valid = model.predict_classes(X_valid, verbose=1)
 rpf = get_evaluation_metrics(Y_valid, Y_predicted_valid)
 print(rpf)
 
