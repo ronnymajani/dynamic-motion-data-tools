@@ -3,6 +3,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.cm
 from utils.preprocessing import spline_interpolate_and_resample
 
 
@@ -73,6 +74,32 @@ def show_digit(digit, label=None, show_points=True, show_lines=True, use_time_as
         plt.plot(xi, yi, '-', c="#1f77b4ff")
 
 
-
+def show_mat(mat, xlabel="", ylabel="", title=None, uniform_ticks=False, hide_ticks=False, show_grid=False, cmap=matplotlib.cm.YlOrRd):
+    ylen = len(mat)
+    xlen = len(mat[0])
+    # show matrix
+    plt.matshow(mat, cmap=cmap)
+    ax = plt.gca()
+    fig = plt.gcf()
+    # set label position
+    ax.xaxis.set_label_position('top')
+    # set labels
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    # set window title
+    if title is not None:
+        fig.canvas.set_window_title(title) 
+    # set uniformly separated ticks
+    if uniform_ticks:
+        plt.xticks(range(xlen))
+        plt.yticks(range(ylen))
+    # hide the ticks
+    if hide_ticks:
+        ax.tick_params(axis=u'both', which=u'both',length=0)
+    # show Gridlines based on minor ticks
+    if show_grid:
+        ax.set_xticks(np.arange(-.5, xlen, 1), minor=True)
+        ax.set_yticks(np.arange(-.5, ylen, 1), minor=True)
+        ax.grid(which='minor', color='w', linestyle='-', linewidth=2)
 
 
