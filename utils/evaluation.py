@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.cm
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import precision_recall_fscore_support
 import utils.plot
 
 def get_confusion_matrix(Y_true, Y_predicted, y_true_is_one_hot=True, y_predicted_is_one_hot=False, plot=False):
@@ -22,7 +24,18 @@ def get_confusion_matrix(Y_true, Y_predicted, y_true_is_one_hot=True, y_predicte
     confmat = confusion_matrix(Y_true, Y_predicted)
     
     if plot:
-        plt.matshow(confmat, cmap=matplotlib.cm.seismic)
+        plt.matshow(confmat, cmap=matplotlib.cm.YlOrRd)
+        plt.xlabel("Prediction")
+        plt.ylabel("True")
+        plt.xticks(range(10))
+        plt.yticks(range(10))
+        ax = plt.gca()
+        ax.xaxis.set_label_position('top')
+        ax.set_xticks(np.arange(-.5, 10, 1), minor=True);
+        ax.set_yticks(np.arange(-.5, 10, 1), minor=True);
+        ax.tick_params(axis=u'both', which=u'both',length=0)
+        # Gridlines based on minor ticks
+        ax.grid(which='minor', color='w', linestyle='-', linewidth=2)
         
     return confmat
         
@@ -80,6 +93,12 @@ def get_random_failure(X_fail, Y_fail_true, Y_fail_predicted, plot=True):
     print("Predicted: %d", predicted)
     return x, y, predicted
     
-    
-    
+def get_evaluation_metrics(Y_true, Y_predicted, y_true_is_one_hot=True, y_predicted_is_one_hot=False):
+    if y_true_is_one_hot:
+        Y_true = Y_true.argmax(axis=1)
+    if y_predicted_is_one_hot:
+        Y_predicted = Y_predicted.argmax(axis=1)
+        
+    vals = np.array(precision_recall_fscore_support(Y_true, Y_predicted))
+    return pd.DataFrame(vals.T, columns=["recall", "precision", "f1_score", "support"])
     

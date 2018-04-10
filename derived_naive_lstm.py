@@ -137,10 +137,18 @@ model.fit(**fit_params)
 #model.fit(x=X_train, y=Y_train, epochs=30, verbose=1, callbacks=[checkpointer, tensorboard_callback], validation_data=(X_valid, Y_valid), batch_size=BATCH_SIZE)
 
 #%% Model Evaluation
+from utils.evaluation import get_evaluation_metrics, get_confusion_matrix
 #Evaluate Model
+# Test Score
 test_score = tuple(model.evaluate(X_test, Y_test))
 print("Test Loss: %.3f, Test Acc: %.3f%%" % (test_score[0], test_score[1] * 100))
 
+# Recall, Precision, F1_Score on Validation set
+Y_predicted_valid = model.predict_classes(X_valid, verbose=1)
+rpf = get_evaluation_metrics(Y_valid, Y_predicted_valid)
+
+# Confusion Matrix
+confmat = get_confusion_matrix(Y_valid, Y_predicted_valid, plot=True)
 #%% [optional] continue training for 30 more epochs
 #continue_params = fit_params.copy()
 #continue_params['epochs'] = 60
