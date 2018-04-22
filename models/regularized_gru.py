@@ -11,13 +11,14 @@ from keras import Sequential
 from keras.layers import GRU
 from keras.layers import Dense
 from keras.layers import Activation
-from keras.optimizers import Adam
+from keras.layers import Dropout
+from keras.optimizers import Nadam
 from models.model_template import ModelTemplate
 
 
-class NaiveGRU(ModelTemplate):
-    NAME = "Naive Overfitting GRU"
-    PREFIX = "naive_overfit_gru"
+class NaiveRegularizedGRU(ModelTemplate):
+    NAME = "Naive Regularized GRU"
+    PREFIX = "naive_regularized_gru"
     
     def __init__(self, input_shape, **kwargs):
         ModelTemplate.__init__(self, input_shape, **kwargs)
@@ -28,11 +29,13 @@ class NaiveGRU(ModelTemplate):
         # Model
         self.model = Sequential()
         self.model.add(GRU(256, return_sequences=True, input_shape=self.input_shape))
+        self.model.add(Dropout(0.5))
         self.model.add(GRU(256))
+        self.model.add(Dropout(0.5))
         self.model.add(Dense(10))
         self.model.add(Activation('softmax'))
         # Optimizer
-        self.optimizer = Adam()
+        self.optimizer = Nadam()
         # Compile Model
         self.model.compile(loss='categorical_crossentropy', optimizer=self.optimizer, metrics=['categorical_accuracy'])
         
