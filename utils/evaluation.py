@@ -3,7 +3,11 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_recall_fscore_support
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.model_selection import StratifiedKFold
 import utils.plot
+from models.model_template import ModelTemplate
+import copy
 
 def get_confusion_matrix(Y_true, Y_predicted, y_true_is_one_hot=True, y_predicted_is_one_hot=False, plot=False):
     """ Calculates the confusion matrix for the given model and data.
@@ -89,4 +93,40 @@ def get_evaluation_metrics(Y_true, Y_predicted, y_true_is_one_hot=True, y_predic
         
     vals = np.array(precision_recall_fscore_support(Y_true, Y_predicted))
     return pd.DataFrame(vals.T, columns=["recall", "precision", "f1 score", "#"])
+
+def cross_validation(X, Y, model, n_folds):
+    """ Evaluate a given model using crossvalidation 
+    @param[in] X: data to split into test/valid sets
+    @param[in] Y: labels to split into test/valid sets. They should NOT be onehot encoded
+    @param[in] model: An uninitialized model object that implements the ModelTemplate class from models/model_template.py
+    @param[in] n_folds: Number of K-folds to split the training_valid data into K different train/valid splits
+    """
+    if not isinstance(model, ModelTemplate):
+        raise ValueError("the model argument must be an instance of ModelTemplate!")
+
+    encoder = OneHotEncoder()
+    encoder.fit(Y.reshape(-1, 1))
+    kfold = StratifiedKFold(n_splits=n_folds, shuffle=True)
+    cvscores = []
+    
+    for train, valid in kfold.split(X, Y):
+        model_copy = copy.deepcopy(model)
+        model_copy.disable_callbacks()
+        model_copy.initialize()
+        
+        train_labels = encoder.transform(Y[train].reshape(-1, 1))
+        valid_labels = encoder.transform(Y[valid].reshape(-1, 1))
+        
+        # even though we are passing thevalidation set to the training function
+        # it is not being used a swe disabled callback
+        model_copy.train(X[train], train_labels, X[valid], valid_labels)
+        scores = model_copy.evaluate(x=X[valid], y=valid_labels)
+        print("%s: %.2f%%" % (model_copy.model.metrics_names[1], scores[1]*100))
+        cvscores.append(scores[1] * 100)
+    
+    print("%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
+    return cvscores
+    
+    
+    
     

@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 # allow the script to access the parent directory so we can import the other modules
-import os, sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# https://stackoverflow.com/a/35273613
+import os
+import sys
+nb_dir = os.path.split(os.getcwd())[0]
+if nb_dir not in sys.path:
+    sys.path.append(nb_dir)
 
 #%%
 # Constants
-PARAM_NUM_EPOCHS = 30
+PARAM_NUM_EPOCHS = 15
 PARAM_BATCH_SIZE = 300
-NUM_SAMPLES = 200
+NUM_SAMPLES = 50
 
 # Paths
 dataset_folder_path = os.path.join("files", "dataset")
@@ -63,11 +67,11 @@ mymodel.train(X_train, Y_train, X_valid, Y_valid)
 from utils.evaluation import get_evaluation_metrics, get_confusion_matrix
 #Evaluate Model
 # Test Score
-test_score = tuple(model.evaluate(X_test, Y_test))
+test_score = tuple(mymodel.evaluate(X_test, Y_test))
 print("Test Loss: %.3f, Test Acc: %.3f%%" % (test_score[0], test_score[1] * 100))
 
 # Recall, Precision, F1_Score on Validation set
-Y_predicted_valid = model.predict_classes(X_valid, verbose=1)
+Y_predicted_valid = mymodel.predict_classes(X_valid, verbose=1)
 rpf = get_evaluation_metrics(Y_valid, Y_predicted_valid)
 print(rpf)
 
