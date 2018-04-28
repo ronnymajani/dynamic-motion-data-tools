@@ -177,9 +177,14 @@ class DataSet(object):
         """Returns a copy of this dataset"""
         res = DataSet()
         res.train_data = copy.copy(self.train_data)
-        res.test_data = copy.copy(self.test_data)
         res.train_labels = copy.copy(self.train_labels)
+        res.valid_data = copy.copy(self.valid_data)
+        res.valid_labels = copy.copy(self.valid_labels)
+        res.test_data = copy.copy(self.test_data)
         res.test_labels = copy.copy(self.test_labels)
+        res.encoder = copy.copy(self.encoder)
+        res.encoder = self._is_onehot_encoded
+        res.applied_operations = copy.copy(self._applied_operations)
         res._is_dt = self._is_dt
         return res
     
