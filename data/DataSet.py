@@ -17,6 +17,8 @@ class DataSet(object):
     def __init__(self, folder=None):
         self.train_data = None
         self.train_labels = None
+        self.valid_data = None
+        self.valid_labels = None
         self.test_data = None
         self.test_labels = None
         self._is_dt = True
@@ -24,24 +26,37 @@ class DataSet(object):
         if folder is not None:
             self.load(folder)
     
-    def load(self, folder, test_set_percentage=0.3333):
+    def load(self, folder, test_set_percentage=0.3333, validation_set_percentage=0.3333):
         """ Load a set of digitsets in the given folder, and split them into train and test sets
         @param[in] test_set_percentage: The percentage of the data that will be assigned to the test set
+        @param[in] validation_set_percentage: The percentage of the non test data that will be assigned to the validation set
         @param[optional] random_seed: The seed to use for randomization
         """
         if self.train_data is not None or self.test_data is not None:
             warnings.warn("Loading a new dataset into a non empty DataSet object")
         if test_set_percentage >= 1.0:
-            raise ValueError("Test Set percentage too high!")
+            raise ValueError("Test Set percentage too high; should be less than or equal to 1!")
+        elif test_set_percentage < 0:
+            raise ValueError("Test Set percentage should be bigger or equal to 0!")
+        if validation_set_percentage >= 1.0:
+            raise ValueError("Test Set percentage too high; should be less than or equal to 1!")
+        elif validation_set_percentage < 0:
+            raise ValueError("Test Set percentage should be bigger or equal to 0!")
+        
         files = [os.path.join(folder, file) for file in os.listdir(folder)]
-        # split files into train and test
+        # split files into train, valid and test sets
         files = np.random.permutation(files)
         num_users = len(files)
-        split_index = round(num_users * (1.0 - test_set_percentage))
-        train_files = files[:split_index]
-        test_files = files[split_index:]
+        test_split_index = round(num_users * (1.0 - test_set_percentage))
+        valid_split_index = round(num_users * (1.0 - validation_set_percentage))
+        train_valid_files = files[:test_split_index]
+        test_files = files[test_split_index:]
+        train_files = train_valid_files[:valid_split_index]
+        valid_files = train_valid_files[valid_split_index:]
+        # laod the files of each set
         self._load_train_data(train_files)
         self._load_test_data(test_files)
+        self._load_valid_data(valid_files)
         
     def _load_train_data(self, files):
         self.train_data = []
@@ -50,6 +65,14 @@ class DataSet(object):
             digitset = DigitSet(file) 
             self.train_data += digitset.data
             self.train_labels += digitset.labels
+            
+    def _load_valid_data(self, files):
+        self.valid_data = []
+        self.valid_labels = []
+        for file in files:
+            digitset = DigitSet(file) 
+            self.valid_data += digitset.data
+            self.valid_labels += digitset.labels
     
     def _load_test_data(self, files):
         self.test_data = []
@@ -105,24 +128,23 @@ class DataSet(object):
             optype += "|test"
         self._record_operation(optype, operation)
     
-    def get_labels_as_numpy(self, onehot=False):
-        """ Returns the labels as a numpy ndarray
-        if onehot is set to True, it will onehot encode the labels using scikit learn's OneHotEncoder
-        and will return both the encoder and the encoded labels
-        @returns (ndarray of train labels, ndarray of test labels) if onehot is False
-        @returns (OneHotEncoder, ndarray of train labels, ndarray of test labels) if onehot is True
+    def onehot_encode_labels(self):
+        """ Onehot encodes the labels using scikit learn's OneHotEncoder
+        and will return both the encoder and the encoded labels.
+        @returns (OneHotEncoder, ndarray of train labels, ndarray of validation labels, ndarray of test labels) if onehot is True
         """
         train_labels = np.array(self.train_labels).reshape(-1, 1)
+        valid_labels = np.array(self.valid_labels).reshape(-1, 1)
         test_labels = np.array(self.test_labels).reshape(-1, 1)
-        if onehot:
-            encoder = OneHotEncoder()
+        encoder = OneHotEncoder()
+        if len(train_labels) > 0:
             train_labels = encoder.fit_transform(train_labels)
+        if len(valid_labels) > 0:
+            valid_labels = encoder.fit_transform(valid_labels)
+        if len(test_labels) > 0:
             test_labels = encoder.fit_transform(test_labels)
-            return encoder, train_labels, test_labels
-        else:
-            return train_labels, test_labels
+        return encoder, train_labels, valid_labels, test_labels
             
-    
     def copy(self):
         """Returns a copy of this dataset"""
         res = DataSet()

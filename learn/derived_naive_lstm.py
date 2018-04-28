@@ -17,7 +17,8 @@ from utils.preprocessing import *
 from data.DataSet import DataSet
 from functools import partial
 
-dataset = DataSet(dataset_folder_path)
+dataset = DataSet()
+dataset.load(dataset_folder_path, test_set_percentage=0.333, validation_set_percentage=0)
 dataset.apply(apply_mean_centering)
 dataset.apply(apply_unit_distance_normalization)
 #dataset.apply(partial(normalize_pressure_value, max_pressure_val=512))
@@ -34,7 +35,7 @@ from sklearn.model_selection import train_test_split
 X_train_valid = np.array(dataset.train_data)
 X_test = np.array(dataset.test_data)
 # Convert labels to numpy array and OneHot encode them
-encoder, train_valid_labels, Y_test = dataset.get_labels_as_numpy(onehot=True)
+encoder, train_valid_labels, _, Y_test = dataset.onehot_encode_labels()
 train_valid_labels = train_valid_labels.astype('float32').todense()
 Y_test = Y_test.astype('float32').todense()
 # Split Data
