@@ -76,8 +76,8 @@ class DataSet(object):
         valid_files = train_valid_files[valid_split_index:]
         # laod the files of each set
         self._load_train_data(train_files)
-        self._load_test_data(test_files)
         self._load_valid_data(valid_files)
+        self._load_test_data(test_files)
         
     def _load_train_data(self, files):
         self.train_data = []
@@ -108,11 +108,19 @@ class DataSet(object):
         This function is for operations that work on individual digits
         @param[optional] apply_to_test_set: if True, the given operation will also be applied to the test set
         """
+        # Train Set
         res = []
         for digit in self.train_data:
             res.append(operation(digit))
         self.train_data = res
         
+        # Validation Set
+        res = []
+        for digit in self.valid_data:
+            res.append(operation(digit))
+        self.valid_data = res
+        
+        # Test Set
         if apply_to_test_set:
             res = []
             for digit in self.test_data:
@@ -120,31 +128,74 @@ class DataSet(object):
             self.test_data = res
             
         # save name of applied operation
-        optype = "modify:train"
+        optype = "modify:train/valid"
         if apply_to_test_set:
             optype += "|test"
         self._record_operation(optype, operation)
         
         
-    def expand(self, operation, apply_to_test_set=True):
+    def expand(self, operation, apply_to_test_set=True, append_to_end=False):
         """ Apply a given digit operation to each digit in the dataset and append the result
         to the dataset
         @param operation: a function to apply to each digit. should take one argument, which is
-        a single digit, and should return a digit.
+          a single digit, and should return a digit.
+        @param append_to_end: if True, all generated data will be appended to the end of the training dataset
+          else, each generated new digit will be appended right after the original digit that produced it
         """
-        data_len_pre_expand = len(self.train_data)
-        for digit_idx in range(data_len_pre_expand):
-            self.train_data.append(operation(self.train_data[digit_idx]))
-            self.train_labels.append(self.train_labels[digit_idx])
-            
-        if apply_to_test_set:
-            data_len_pre_expand = len(self.test_data)
+        # Train Set
+        if append_to_end:
+            data_len_pre_expand = len(self.train_data)
             for digit_idx in range(data_len_pre_expand):
-                self.test_data.append(operation(self.test_data[digit_idx]))
-                self.test_labels.append(self.test_labels[digit_idx])
+                self.train_data.append(operation(self.train_data[digit_idx]))
+                self.train_labels.append(self.train_labels[digit_idx])
+        else:
+            new_train_data = []
+            new_train_labels = []
+            for digit, label in zip(self.train_data, self.train_labels):
+                new_train_data.append(digit)
+                new_train_data.append(operation(digit))
+                new_train_labels.append(label)
+                new_train_labels.append(label)
+            self.train_data = new_train_data
+            self.train_labels = new_train_labels
+            
+        # Validation Set
+        if append_to_end:
+            data_len_pre_expand = len(self.valid_data)
+            for digit_idx in range(data_len_pre_expand):
+                self.valid_data.append(operation(self.valid_data[digit_idx]))
+                self.valid_labels.append(self.valid_labels[digit_idx])
+        else:
+            new_valid_data = []
+            new_valid_labels = []
+            for digit, label in zip(self.valid_data, self.valid_labels):
+                new_valid_data.append(digit)
+                new_valid_data.append(operation(digit))
+                new_valid_labels.append(label)
+                new_valid_labels.append(label)
+            self.valid_data = new_valid_data
+            self.valid_labels = new_valid_labels    
+        
+        # Test Set
+        if apply_to_test_set:
+            if append_to_end:
+                data_len_pre_expand = len(self.test_data)
+                for digit_idx in range(data_len_pre_expand):
+                    self.test_data.append(operation(self.test_data[digit_idx]))
+                    self.test_labels.append(self.test_labels[digit_idx])
+            else:
+                new_test_data = []
+                new_test_labels = []
+                for digit, label in zip(self.test_data, self.test_labels):
+                    new_test_data.append(digit)
+                    new_test_data.append(operation(digit))
+                    new_test_labels.append(label)
+                    new_test_labels.append(label)
+                self.test_data = new_test_data
+                self.test_labels = new_test_labels
             
         # save name of applied operation
-        optype = "expand:train"
+        optype = "expand:train/valid"
         if apply_to_test_set:
             optype += "|test"
         self._record_operation(optype, operation)
@@ -171,6 +222,7 @@ class DataSet(object):
         return self.encoder, self.train_labels, self.valid_labels, self.test_labels
     
     def labels_are_onehot_encoded(self):
+        """ Returns True if the labels of this dataset have been OneHot encoded """
         return self._is_onehot_encoded        
     
     def copy(self):
@@ -194,10 +246,17 @@ class DataSet(object):
         to 't' (the time elapsed since the first point in this sequence) """
         dt_idx = DataSetContract.DigitSet.Frame.indices['dt']
         
+        # Train Set
         for digit in self.train_data:
             for i in range(1, len(digit)):
                 digit[i][dt_idx] += digit[i-1][dt_idx]
                 
+        # Validation Set
+        for digit in self.valid_data:
+            for i in range(1, len(digit)):
+                digit[i][dt_idx] += digit[i-1][dt_idx]
+                
+        # Test Set
         for digit in self.test_data:
             for i in range(1, len(digit)):
                 digit[i][dt_idx] += digit[i-1][dt_idx]

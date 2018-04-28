@@ -6,6 +6,7 @@ from sklearn.metrics import precision_recall_fscore_support
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import StratifiedKFold
 import utils.plot
+import utils.support
 from models.model_template import ModelTemplate
 import copy
 
@@ -107,10 +108,24 @@ def cross_validate_model(X, Y, model, n_folds):
 
     encoder = OneHotEncoder()
     encoder.fit(Y.reshape(-1, 1))
-    kfold = StratifiedKFold(n_splits=n_folds, shuffle=True)
-    cvscores = []
+    kfold = StratifiedKFold(n_splits=n_folds, shuffle=False)
     
+    # we manually permutate and shuffle the data since we don't want to separate user samples from eachother
+    # meaning that all the samples produced by a user should be next to eachother,
+    # the reason for this is so when we split the data we can ensure that each user is contained within only one set
+    # either the train set or the test set, not both. Although the order with which a users samples appear relative to eachother
+    # can be random,what matters is only that all those samples are consecutive (eg: user 1's data samples are all the data points
+    # between index 200 and 299 inclusive, user 8's data is all the points from index 300 to 399, etc.)
+    if len(X)//100 != len(X)/100:
+        raise ValueError("Dataset is corrupt, not all users have produced the same number of samples!")
+    random_indices = utils.support.get_random_indices_for_dataset(len(X)//100, 100, shuffle=True)
+    X = X[random_indices]
+    Y = Y[random_indices]
+    
+    cvscores = []
+    i = 1    
     for train, valid in kfold.split(X, Y):
+        print("\n....................\nCross validation fold [%d]\n....................\n" % i)
         model_copy = copy.deepcopy(model)
         model_copy.disable_callbacks()
         model_copy.initialize()
@@ -124,6 +139,7 @@ def cross_validate_model(X, Y, model, n_folds):
         scores = model_copy.evaluate(x=X[valid], y=valid_labels)
         print("%s: %.2f%%" % (model_copy.model.metrics_names[1], scores[1]*100))
         cvscores.append(scores[1] * 100)
+        i += 1
     
     print("%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
     return cvscores
