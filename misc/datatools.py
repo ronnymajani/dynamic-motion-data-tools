@@ -5,16 +5,17 @@ import utils.plot as plot
 from utils.preprocessing import *
 from data.DigitSet import DigitSet
 from data.DataSet import DataSet
+import os
 
 #%%
-folder = 'temp'
+folder = os.path.join("files", "dataset")
 dataset = DataSet(folder)
 dataset.apply(apply_mean_centering)
 dataset.apply(apply_unit_distance_normalization)
 dataset.apply(lambda x: normalize_pressure_value(x, 512))
 
 #%%
-filename = "temp/10.43_23.03.2018_digitset.json"
+filename = os.path.join(folder, "10.43_23.03.2018_digitset.json")
 digitset = DigitSet(filename)
 scaled = digitset.copy()
 # Apply transformations

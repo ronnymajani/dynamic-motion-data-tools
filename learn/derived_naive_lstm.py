@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+# allow the script to access the parent directory so we can import the other modules
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 #%%
 # Constants
@@ -7,7 +10,7 @@ PARAM_BATCH_SIZE = 300
 NUM_SAMPLES = 200
 
 # Paths
-dataset_folder_path = 'temp'
+dataset_folder_path = os.path.join("files", "dataset")
 #%% Prepare Data
 # Imports
 from utils.preprocessing import *

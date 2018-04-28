@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
+# allow the script to access the parent directory so we can import the other modules
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utils.preprocessing import *
 from data.DataSet import DataSet
 from sklearn.model_selection import train_test_split
+import os
 
 #%%
 MASK_VALUE = -2.0
 
 #%% Prepare Data
-folder = 'temp'
+folder =  os.path.join('files", "dataset')
 dataset = DataSet(folder)
 dataset.apply(apply_mean_centering)
 dataset.apply(apply_unit_distance_normalization)
@@ -43,7 +47,7 @@ model.add(Activation('softmax'))
 
 #%%
 import os
-save_path = 'checkpoints'
+save_path = os.path.join("files", "checkpoints")
 if not os.path.exists(save_path):
     os.mkdir(save_path)
 

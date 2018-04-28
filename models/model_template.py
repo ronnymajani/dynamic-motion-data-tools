@@ -14,8 +14,8 @@ from keras.callbacks import ModelCheckpoint
 from models.tfcallback import TensorBoardCallback
 
 class ModelTemplate(object):
-    DEFAULT_CHECKPOINTS_SAVE_PATH = "checkpoints"
-    DEFAULT_TENSORBOARD_LOGS_PATH = "logs"
+    DEFAULT_CHECKPOINTS_SAVE_PATH = os.path.join("files", "checkpoints")
+    DEFAULT_TENSORBOARD_LOGS_PATH = os.path.join("files", "tflogs")
     
     def __init__(self, input_shape, checkpoints_save_path=None, tensorboard_logs_path=None):
         # generic attributes
