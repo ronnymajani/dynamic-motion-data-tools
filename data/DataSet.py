@@ -21,10 +21,24 @@ class DataSet(object):
         self.valid_labels = None
         self.test_data = None
         self.test_labels = None
+        self.encoder = None
+        self._is_onehot_encoded = False
         self._is_dt = True
         self._applied_operations = []
         if folder is not None:
             self.load(folder)
+            
+    def reset(self):
+        self.train_data = None
+        self.train_labels = None
+        self.valid_data = None
+        self.valid_labels = None
+        self.test_data = None
+        self.test_labels = None
+        self.encoder = None
+        self._is_onehot_encoded = False
+        self._is_dt = True
+        self._applied_operations = []
     
     def load(self, folder, test_set_percentage=0.3333, validation_set_percentage=0.3333):
         """ Load a set of digitsets in the given folder, and split them into train and test sets
@@ -33,22 +47,29 @@ class DataSet(object):
         @param[optional] random_seed: The seed to use for randomization
         """
         if self.train_data is not None or self.test_data is not None:
+            # reset state
+            self.reset()
+            # warn of reloading data
             warnings.warn("Loading a new dataset into a non empty DataSet object")
         if test_set_percentage >= 1.0:
-            raise ValueError("Test Set percentage too high; should be less than or equal to 1!")
+            raise ValueError("Test Set percentage too high; should be less than 1!")
         elif test_set_percentage < 0:
             raise ValueError("Test Set percentage should be bigger or equal to 0!")
         if validation_set_percentage >= 1.0:
-            raise ValueError("Test Set percentage too high; should be less than or equal to 1!")
+            raise ValueError("Validation Set percentage too high; should be less than 1!")
         elif validation_set_percentage < 0:
-            raise ValueError("Test Set percentage should be bigger or equal to 0!")
+            raise ValueError("Validation Set percentage should be bigger than or equal to 0!")
         
         files = [os.path.join(folder, file) for file in os.listdir(folder)]
         # split files into train, valid and test sets
         files = np.random.permutation(files)
         num_users = len(files)
         test_split_index = round(num_users * (1.0 - test_set_percentage))
+        if test_split_index == 0:
+            raise ValueError("Test Set percentage too high; no data left for Train set!")
         valid_split_index = round(num_users * (1.0 - validation_set_percentage))
+        if valid_split_index == 0:
+            raise ValueError("Validation Set percentage too high; no data left for Train set!")
         train_valid_files = files[:test_split_index]
         test_files = files[test_split_index:]
         train_files = train_valid_files[:valid_split_index]
@@ -129,22 +150,29 @@ class DataSet(object):
         self._record_operation(optype, operation)
     
     def onehot_encode_labels(self):
-        """ Onehot encodes the labels using scikit learn's OneHotEncoder
-        and will return both the encoder and the encoded labels.
+        """ Onehot encodes this datasets labels using scikit learn's OneHotEncoder
+        and will return both the encoder and the encoded labels. If the dataset is already onehot encoded,
+        this function will just return the previously onehot encoded labels and their encoder
         @returns (OneHotEncoder, ndarray of train labels, ndarray of validation labels, ndarray of test labels) if onehot is True
         """
-        train_labels = np.array(self.train_labels).reshape(-1, 1)
-        valid_labels = np.array(self.valid_labels).reshape(-1, 1)
-        test_labels = np.array(self.test_labels).reshape(-1, 1)
-        encoder = OneHotEncoder()
-        if len(train_labels) > 0:
-            train_labels = encoder.fit_transform(train_labels)
-        if len(valid_labels) > 0:
-            valid_labels = encoder.fit_transform(valid_labels)
-        if len(test_labels) > 0:
-            test_labels = encoder.fit_transform(test_labels)
-        return encoder, train_labels, valid_labels, test_labels
-            
+        if self._is_onehot_encoded:
+            warnings.warn("The labels of this dataset are already onehot encoded!")
+        else:
+            self._is_onehot_encoded = True
+            train_labels = np.array(self.train_labels).reshape(-1, 1)
+            valid_labels = np.array(self.valid_labels).reshape(-1, 1)
+            test_labels = np.array(self.test_labels).reshape(-1, 1)
+            self.encoder = OneHotEncoder()
+            self.train_labels = self.encoder.fit_transform(train_labels)
+            if len(valid_labels) > 0:
+                self.valid_labels = self.encoder.transform(valid_labels)
+            if len(test_labels) > 0:
+                self.test_labels = self.encoder.transform(test_labels)
+        return self.encoder, self.train_labels, self.valid_labels, self.test_labels
+    
+    def labels_are_onehot_encoded(self):
+        return self._is_onehot_encoded        
+    
     def copy(self):
         """Returns a copy of this dataset"""
         res = DataSet()
