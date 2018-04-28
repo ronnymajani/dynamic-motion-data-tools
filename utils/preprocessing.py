@@ -138,12 +138,12 @@ def spline_interpolate_and_resample(digit, num_samples):
         
     x_idx = DataSetContract.DigitSet.Frame.indices['X']
     y_idx = DataSetContract.DigitSet.Frame.indices['Y']
-    # Delete identical points to not get an error from the spline function
-    # https://stackoverflow.com/questions/47948453/scipy-interpolate-splprep-error-invalid-inputs/47949170#47949170
     x = digit[:, x_idx]
     y = digit[:, y_idx]
     x = x.flatten()
     y = y.flatten()
+    # Delete identical points to not get an error from the spline function
+    # https://stackoverflow.com/questions/47948453/scipy-interpolate-splprep-error-invalid-inputs/47949170#47949170
     okay = np.where(np.abs(np.diff(x)) + np.abs(np.diff(y)) > 0)
     xp = np.r_[x[okay], x[-1], x[0]]
     yp = np.r_[y[okay], y[-1], y[0]]

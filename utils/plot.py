@@ -37,7 +37,9 @@ def show_digit(digit, label=None, show_points=True, show_lines=True, use_time_as
     ax = plt.gca()
     
     if show_lines:
-        xi, yi = spline_interpolate_and_resample(data, 1000)
+        spline = spline_interpolate_and_resample(data, 1000)
+        spline = spline.T
+        xi, yi = spline[0], spline[1]
         y_max = max(y.max(), yi.max()) + padding
         y_min = min(y.min(), yi.min()) - padding
         x_max = max(x.max(), xi.max()) + padding
