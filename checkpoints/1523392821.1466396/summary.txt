@@ -1,0 +1,44 @@
+Naive Overfitting GRU
+2018-04-10 23:40:21
+
+----------
+
+* [modify:train|test] (apply_mean_centering):
+	Mean Centering
+
+* [modify:train|test] (apply_unit_distance_normalization):
+	Unit Distance Normalization
+
+* [modify:train|test] (spline_interpolate_and_resample):
+	B-Spine Interpolation and Resampling (Warning: Deletes time and pressure features!)
+	>> args: ()
+	>> keywords: {'num_samples': 200}
+
+* [expand:train|test] (reverse_digit_sequence):
+	Reverse Order of Digit Sequences
+
+----------
+
+Optimizer: <class 'keras.optimizers.Adam'>
+Batch Size: 300
+Number of Epochs: 30
+
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+gru_1 (GRU)                  (None, 200, 256)          198912    
+_________________________________________________________________
+gru_2 (GRU)                  (None, 256)               393984    
+_________________________________________________________________
+dense_1 (Dense)              (None, 10)                2570      
+_________________________________________________________________
+activation_1 (Activation)    (None, 10)                0         
+=================================================================
+Total params: 595,466
+Trainable params: 595,466
+Non-trainable params: 0
+_________________________________________________________________
+
+
+----------
+

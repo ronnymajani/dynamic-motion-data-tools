@@ -1,0 +1,52 @@
+Naive Regularized Deep GRU
+2018-04-22 17:46:49
+
+----------
+
+* [modify:train|test] (apply_mean_centering):
+	Mean Centering
+
+* [modify:train|test] (apply_unit_distance_normalization):
+	Unit Distance Normalization
+
+* [modify:train|test] (spline_interpolate_and_resample):
+	B-Spine Interpolation and Resampling (Warning: Deletes time and pressure features!)
+	>> args: ()
+	>> keywords: {'num_samples': 50}
+
+* [expand:train|test] (reverse_digit_sequence):
+	Reverse Order of Digit Sequences
+
+----------
+
+Optimizer: <class 'keras.optimizers.Nadam'>
+Batch Size: 300
+Number of Epochs: 30
+
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+gru_3 (GRU)                  (None, 50, 512)           791040    
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 50, 512)           0         
+_________________________________________________________________
+gru_4 (GRU)                  (None, 512)               1574400   
+_________________________________________________________________
+dropout_4 (Dropout)          (None, 512)               0         
+_________________________________________________________________
+dense_3 (Dense)              (None, 128)               65664     
+_________________________________________________________________
+activation_3 (Activation)    (None, 128)               0         
+_________________________________________________________________
+dense_4 (Dense)              (None, 10)                1290      
+_________________________________________________________________
+activation_4 (Activation)    (None, 10)                0         
+=================================================================
+Total params: 2,432,394
+Trainable params: 2,432,394
+Non-trainable params: 0
+_________________________________________________________________
+
+
+----------
+
