@@ -13,7 +13,7 @@ from keras.layers import Dense
 from keras.layers import Activation
 from keras.layers import Dropout
 from keras.optimizers import Nadam
-from models.model_template import ModelTemplate
+from .model_template import ModelTemplate
 
 
 class NaiveRegularizedDeepGRU(ModelTemplate):

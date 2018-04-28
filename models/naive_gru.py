@@ -12,7 +12,7 @@ from keras.layers import GRU
 from keras.layers import Dense
 from keras.layers import Activation
 from keras.optimizers import Adam
-from models.model_template import ModelTemplate
+from .model_template import ModelTemplate
 
 
 class NaiveGRU(ModelTemplate):

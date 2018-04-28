@@ -9,9 +9,9 @@ import os
 import time, datetime
 import io
 import pprint
-
+import warnings
 from keras.callbacks import ModelCheckpoint
-from models.tfcallback import TensorBoardCallback
+from .tfcallback import TensorBoardCallback
 
 class ModelTemplate(object):
     DEFAULT_CHECKPOINTS_SAVE_PATH = os.path.join("files", "checkpoints")
@@ -22,6 +22,7 @@ class ModelTemplate(object):
         self.name = "Model Template"
         self.prefix = "model"
         self.timestamp = time.time()
+        self._use_callbacks = True
         # folders and paths
         if checkpoints_save_path is None:
             self.checkpoints_save_path = ModelTemplate.DEFAULT_CHECKPOINTS_SAVE_PATH
@@ -32,6 +33,7 @@ class ModelTemplate(object):
             self.tensorboard_logs_path = ModelTemplate.DEFAULT_TENSORBOARD_LOGS_PATH
         else:
             self.tensorboard_logs_path = tensorboard_logs_path
+            
         # model attributes
         self.model = None
         self.optimizer = None
@@ -41,10 +43,28 @@ class ModelTemplate(object):
         self.input_shape = input_shape
         self.fit_params = None
         
-    def initialize(self):
+    def disable_callbacks(self):
+        if self.model is not None:
+            warnings.warn("Disabling callbacks after model has been compiled!")
+        self._use_callbacks = False
+        self.callbacks = []
+        
+    def enable_callbacks(self):
+        self._use_callbacks = True
         self._setup_folders()
         self._setup_callbacks()
+        
+    def initialize(self):
+        self._setup_folders()
+        if self._use_callbacks:
+            self._setup_callbacks()
         self._build()
+        
+    def evaluate(self, **kwargs):
+        return self.model.evaluate(**kwargs)
+    
+    def predict_classes(self, **kwargs):
+        return self.model.predict_classes(**kwargs)
         
     # OVERRIDE THIS METHOD
     def _build(self):
@@ -69,7 +89,7 @@ class ModelTemplate(object):
         with open(os.path.join(self.checkpoints_dir, filename), "w") as fd:
             fd.write(self.get_model_config())
             fd.write("\n")
-        
+            
     def __str__(self):
         res = ""
         sep = "\n\n----------\n\n"
@@ -85,14 +105,15 @@ class ModelTemplate(object):
     # OVERRIDEABLE
     def _setup_folders(self):
         """ Create all needed folders, and save their paths so they can be used later """
-        self.tensorboard_dir = os.path.join(self.tensorboard_logs_path, "{}".format(self.timestamp))
+        if self._use_callbacks:
+            self.tensorboard_dir = os.path.join(self.tensorboard_logs_path, "{}".format(self.timestamp))
+            if not os.path.exists(self.tensorboard_logs_path):
+                os.mkdir(self.tensorboard_logs_path)
+
         self.checkpoints_dir = os.path.join(self.checkpoints_save_path, "{}".format(self.timestamp))
-        
         # Create Checkpoints save directory if it doesn't exist
         if not os.path.exists(self.checkpoints_save_path):
             os.mkdir(self.checkpoints_save_path)
-        if not os.path.exists(self.tensorboard_logs_path):
-            os.mkdir(self.tensorboard_logs_path)
         if not os.path.exists(self.checkpoints_dir):
             os.mkdir(self.checkpoints_dir)
     
