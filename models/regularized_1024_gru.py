@@ -41,7 +41,12 @@ class Regularized1024GRU(ModelTemplate):
         # Compile Model
         self.model.compile(loss='categorical_crossentropy', optimizer=self.optimizer, metrics=['categorical_accuracy'])
         
-    def train(self, X_train, Y_train, X_valid, Y_valid):
+    def train(self, X_train, Y_train, X_valid=None, Y_valid=None):
+        # Validation Data
+        if X_valid is None or Y_valid is None:
+            validation_data = None
+        else:
+            validation_data = (X_valid, Y_valid)
         # Train Model
         self.fit_params = {
                 'x': X_train,
@@ -49,7 +54,7 @@ class Regularized1024GRU(ModelTemplate):
                 'epochs': self.num_epochs,
                 'verbose': 1,
                 'callbacks': self.callbacks,
-                'validation_data': (X_valid, Y_valid),
+                'validation_data': validation_data,
                 'batch_size': self.batch_size
         }
         self.model.fit(**self.fit_params)
