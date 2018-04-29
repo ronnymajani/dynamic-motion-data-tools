@@ -101,11 +101,13 @@ def cross_validate_model(X, Y, model, n_folds, random_state=None):
     @param[in] Y: labels to split into test/valid sets. They should NOT be onehot encoded
     @param[in] model: An uninitialized model object that implements the ModelTemplate class from models/model_template.py
     @param[in] n_folds: Number of K-folds to split the training_valid data into K different train/valid splits
+    @param[in] random_state: The random state to be used when shuffling and permutating the data
     @returns list of accuracies of n cross folds evaluated after training
     """
     if not isinstance(model, ModelTemplate):
         raise ValueError("the model argument must be an instance of ModelTemplate!")
 
+    np.random.seed(random_state)
     encoder = OneHotEncoder()
     encoder.fit(Y.reshape(-1, 1))
     kfold = StratifiedKFold(n_splits=n_folds, shuffle=False, random_state=random_state)
