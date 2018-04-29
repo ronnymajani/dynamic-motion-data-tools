@@ -37,7 +37,7 @@ class NaiveRegularizedDeepGRU(ModelTemplate):
         self.model.add(Dense(10))
         self.model.add(Activation('softmax'))
         # Optimizer
-        self.optimizer = Nadam()
+        self.optimizer = Nadam(lr=0.0005, schedule_decay=0.15)
         # Compile Model
         self.model.compile(loss='categorical_crossentropy', optimizer=self.optimizer, metrics=['categorical_accuracy'])
         
