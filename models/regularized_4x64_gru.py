@@ -16,9 +16,9 @@ from keras.optimizers import Nadam
 from .model_template import ModelTemplate
 
 
-class Regularized1024GRU(ModelTemplate):
-    NAME = "Regularized 1024 GRU"
-    PREFIX = "regularized_1024_gru"
+class Regularized4x64GRU(ModelTemplate):
+    NAME = "Regularized 4x64 GRU"
+    PREFIX = "regularized_4x64_gru"
     
     def __init__(self, input_shape, **kwargs):
         ModelTemplate.__init__(self, input_shape, **kwargs)
@@ -28,16 +28,20 @@ class Regularized1024GRU(ModelTemplate):
     def _build(self):
         # Model
         self.model = Sequential()
-        self.model.add(GRU(1024, return_sequences=True, input_shape=self.input_shape))
+        self.model.add(GRU(64, return_sequences=True, input_shape=self.input_shape))
+        self.model.add(Dropout(0.3))
+        self.model.add(GRU(64, return_sequences=True))
+        self.model.add(Dropout(0.3))
+        self.model.add(GRU(64, return_sequences=True))
+        self.model.add(Dropout(0.3))
+        self.model.add(GRU(64))
         self.model.add(Dropout(0.5))
-        self.model.add(GRU(1024))
-        self.model.add(Dropout(0.5))
-        self.model.add(Dense(256))
+        self.model.add(Dense(32))
         self.model.add(Activation('relu'))
         self.model.add(Dense(10))
         self.model.add(Activation('softmax'))
         # Optimizer
-        self.optimizer = Nadam(lr=0.0005, schedule_decay=0.15)
+        self.optimizer = Nadam(lr=0.001, schedule_decay=0.15)
         # Compile Model
         self.model.compile(loss='categorical_crossentropy', optimizer=self.optimizer, metrics=['categorical_accuracy'])
         
