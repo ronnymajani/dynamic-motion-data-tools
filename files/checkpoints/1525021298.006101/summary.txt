@@ -1,20 +1,20 @@
-Naive Regularized Deep GRU
-2018-04-22 17:33:27
+Regularized 1024 GRU
+2018-04-29 20:01:38
 
 ----------
 
-* [modify:train|test] (apply_mean_centering):
+* [modify:train/valid|test] (apply_mean_centering):
 	Mean Centering
 
-* [modify:train|test] (apply_unit_distance_normalization):
+* [modify:train/valid|test] (apply_unit_distance_normalization):
 	Unit Distance Normalization
 
-* [modify:train|test] (spline_interpolate_and_resample):
+* [modify:train/valid|test] (spline_interpolate_and_resample):
 	B-Spine Interpolation and Resampling (Warning: Deletes time and pressure features!)
 	>> args: ()
 	>> keywords: {'num_samples': 50}
 
-* [expand:train|test] (reverse_digit_sequence):
+* [expand:train/valid|test] (reverse_digit_sequence):
 	Reverse Order of Digit Sequences
 
 ----------
@@ -26,24 +26,24 @@ Number of Epochs: 30
 _________________________________________________________________
 Layer (type)                 Output Shape              Param #   
 =================================================================
-gru_1 (GRU)                  (None, 50, 512)           791040    
+gru_1 (GRU)                  (None, 50, 1024)          3154944   
 _________________________________________________________________
-dropout_1 (Dropout)          (None, 50, 512)           0         
+dropout_1 (Dropout)          (None, 50, 1024)          0         
 _________________________________________________________________
-gru_2 (GRU)                  (None, 512)               1574400   
+gru_2 (GRU)                  (None, 1024)              6294528   
 _________________________________________________________________
-dropout_2 (Dropout)          (None, 512)               0         
+dropout_2 (Dropout)          (None, 1024)              0         
 _________________________________________________________________
-dense_1 (Dense)              (None, 128)               65664     
+dense_1 (Dense)              (None, 256)               262400    
 _________________________________________________________________
-activation_1 (Activation)    (None, 128)               0         
+activation_1 (Activation)    (None, 256)               0         
 _________________________________________________________________
-dense_2 (Dense)              (None, 10)                1290      
+dense_2 (Dense)              (None, 10)                2570      
 _________________________________________________________________
 activation_2 (Activation)    (None, 10)                0         
 =================================================================
-Total params: 2,432,394
-Trainable params: 2,432,394
+Total params: 9,714,442
+Trainable params: 9,714,442
 Non-trainable params: 0
 _________________________________________________________________
 

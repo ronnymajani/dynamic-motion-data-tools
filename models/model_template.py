@@ -51,12 +51,12 @@ class ModelTemplate(object):
         
     def enable_callbacks(self):
         self._use_callbacks = True
-        self._setup_folders()
+        self._setup_callback_folders()
         self._setup_callbacks()
         
     def initialize(self):
-        self._setup_folders()
         if self._use_callbacks:
+			self._setup_callback_folders()
             self._setup_callbacks()
         self._build()
         
@@ -71,7 +71,7 @@ class ModelTemplate(object):
         raise NotImplementedError
     
     # OVERRIDE THIS METHOD
-    def train(self, X_train, Y_train, X_valid, Y_valid):
+    def train(self, X_train, Y_train, X_valid=None, Y_valid=None):
         raise NotImplementedError
         
     def save_summary(self, recorded_operations, filename="summary.txt"):
@@ -103,19 +103,18 @@ class ModelTemplate(object):
         return res
     
     # OVERRIDEABLE
-    def _setup_folders(self):
+    def _setup_callback_folders(self):
         """ Create all needed folders, and save their paths so they can be used later """
-        if self._use_callbacks:
-            self.tensorboard_dir = os.path.join(self.tensorboard_logs_path, "{}".format(self.timestamp))
-            if not os.path.exists(self.tensorboard_logs_path):
-                os.mkdir(self.tensorboard_logs_path)
+		self.tensorboard_dir = os.path.join(self.tensorboard_logs_path, "{}".format(self.timestamp))
+		if not os.path.exists(self.tensorboard_logs_path):
+			os.mkdir(self.tensorboard_logs_path)
 
-        self.checkpoints_dir = os.path.join(self.checkpoints_save_path, "{}".format(self.timestamp))
-        # Create Checkpoints save directory if it doesn't exist
-        if not os.path.exists(self.checkpoints_save_path):
-            os.mkdir(self.checkpoints_save_path)
-        if not os.path.exists(self.checkpoints_dir):
-            os.mkdir(self.checkpoints_dir)
+		self.checkpoints_dir = os.path.join(self.checkpoints_save_path, "{}".format(self.timestamp))
+		# Create Checkpoints save directory if it doesn't exist
+		if not os.path.exists(self.checkpoints_save_path):
+			os.mkdir(self.checkpoints_save_path)
+		if not os.path.exists(self.checkpoints_dir):
+			os.mkdir(self.checkpoints_dir)
     
     # OVERRIDEABLE
     def _setup_callbacks(self):
