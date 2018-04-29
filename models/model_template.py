@@ -56,7 +56,7 @@ class ModelTemplate(object):
         
     def initialize(self):
         if self._use_callbacks:
-			self._setup_callback_folders()
+            self._setup_callback_folders()
             self._setup_callbacks()
         self._build()
         
@@ -105,16 +105,16 @@ class ModelTemplate(object):
     # OVERRIDEABLE
     def _setup_callback_folders(self):
         """ Create all needed folders, and save their paths so they can be used later """
-		self.tensorboard_dir = os.path.join(self.tensorboard_logs_path, "{}".format(self.timestamp))
-		if not os.path.exists(self.tensorboard_logs_path):
-			os.mkdir(self.tensorboard_logs_path)
+        self.tensorboard_dir = os.path.join(self.tensorboard_logs_path, "{}".format(self.timestamp))
+        if not os.path.exists(self.tensorboard_logs_path):
+            os.mkdir(self.tensorboard_logs_path)
 
-		self.checkpoints_dir = os.path.join(self.checkpoints_save_path, "{}".format(self.timestamp))
-		# Create Checkpoints save directory if it doesn't exist
-		if not os.path.exists(self.checkpoints_save_path):
-			os.mkdir(self.checkpoints_save_path)
-		if not os.path.exists(self.checkpoints_dir):
-			os.mkdir(self.checkpoints_dir)
+        self.checkpoints_dir = os.path.join(self.checkpoints_save_path, "{}".format(self.timestamp))
+        # Create Checkpoints save directory if it doesn't exist
+        if not os.path.exists(self.checkpoints_save_path):
+            os.mkdir(self.checkpoints_save_path)
+        if not os.path.exists(self.checkpoints_dir):
+            os.mkdir(self.checkpoints_dir)
     
     # OVERRIDEABLE
     def _setup_callbacks(self):
