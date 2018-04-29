@@ -95,7 +95,7 @@ def get_evaluation_metrics(Y_true, Y_predicted, y_true_is_one_hot=True, y_predic
     vals = np.array(precision_recall_fscore_support(Y_true, Y_predicted))
     return pd.DataFrame(vals.T, columns=["recall", "precision", "f1 score", "#"])
 
-def cross_validate_model(X, Y, model, n_folds):
+def cross_validate_model(X, Y, model, n_folds, random_state=None):
     """ Evaluate a given model using crossvalidation 
     @param[in] X: data to split into test/valid sets
     @param[in] Y: labels to split into test/valid sets. They should NOT be onehot encoded
@@ -108,7 +108,7 @@ def cross_validate_model(X, Y, model, n_folds):
 
     encoder = OneHotEncoder()
     encoder.fit(Y.reshape(-1, 1))
-    kfold = StratifiedKFold(n_splits=n_folds, shuffle=False)
+    kfold = StratifiedKFold(n_splits=n_folds, shuffle=False, random_state=random_state)
     
     # we manually permutate and shuffle the data since we don't want to separate user samples from eachother
     # meaning that all the samples produced by a user should be next to eachother,
