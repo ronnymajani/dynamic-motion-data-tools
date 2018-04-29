@@ -51,11 +51,13 @@ class ModelTemplate(object):
         
     def enable_callbacks(self):
         self._use_callbacks = True
+        self.__setup_checkpoints_folder()
         self._setup_callback_folders()
         self._setup_callbacks()
         
     def initialize(self):
         if self._use_callbacks:
+            self.__setup_checkpoints_folder()
             self._setup_callback_folders()
             self._setup_callbacks()
         self._build()
@@ -76,7 +78,9 @@ class ModelTemplate(object):
         
     def save_summary(self, recorded_operations, filename="summary.txt"):
         """ Save summary of current model in a file """
-        with open(os.path.join(self.checkpoints_dir, filename), "w") as fd:
+        self.__setup_checkpoints_folder()  # setup checkpoints folder if it doesn't exist
+        output_filename = os.path.join(self.checkpoints_dir, filename)
+        with open(output_filename, "w") as fd:
             sep = "\n\n----------\n\n"
             timestamp = datetime.datetime.fromtimestamp(self.timestamp).strftime('%Y-%m-%d %H:%M:%S')
             fd.write(self.name)
@@ -84,11 +88,20 @@ class ModelTemplate(object):
             fd.write(sep)
             fd.write("\n\n".join(recorded_operations))
             fd.write(self.__str__())
+            print("Summary saved to", output_filename)
             
     def save_config(self, filename="model.txt"):
-        with open(os.path.join(self.checkpoints_dir, filename), "w") as fd:
+        self.__setup_checkpoints_folder()  # setup checkpoints folder if it doesn't exist
+        output_filename = os.path.join(self.checkpoints_dir, filename)
+        with open(output_filename, "w") as fd:
             fd.write(self.get_model_config())
             fd.write("\n")
+            print("Model config saved to", output_filename)
+            
+    def save(self, filename="model_manual_save.hdf5"):
+        self.__setup_checkpoints_folder()  # setup checkpoints folder if it doesn't exist
+        output_filename = os.path.join(self.checkpoints_dir, filename)
+        self.model.save(output_filename)
             
     def __str__(self):
         res = ""
@@ -109,6 +122,7 @@ class ModelTemplate(object):
         if not os.path.exists(self.tensorboard_logs_path):
             os.mkdir(self.tensorboard_logs_path)
 
+    def __setup_checkpoints_folder(self):
         self.checkpoints_dir = os.path.join(self.checkpoints_save_path, "{}".format(self.timestamp))
         # Create Checkpoints save directory if it doesn't exist
         if not os.path.exists(self.checkpoints_save_path):
