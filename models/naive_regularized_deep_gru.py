@@ -16,9 +16,9 @@ from keras.optimizers import Nadam
 from .model_template import ModelTemplate
 
 
-class RegularizedDeepGRU(ModelTemplate):
-    NAME = "Regularized Deep GRU"
-    PREFIX = "regularized_deep_gru"
+class NaiveRegularizedDeepGRU(ModelTemplate):
+    NAME = "Naive Regularized Deep GRU"
+    PREFIX = "naive_regularized_deep_gru"
     
     def __init__(self, input_shape, **kwargs):
         ModelTemplate.__init__(self, input_shape, **kwargs)
@@ -37,7 +37,7 @@ class RegularizedDeepGRU(ModelTemplate):
         self.model.add(Dense(10))
         self.model.add(Activation('softmax'))
         # Optimizer
-        self.optimizer = Nadam(lr=0.0005, schedule_decay=0.15)
+        self.optimizer = Nadam()
         # Compile Model
         self.model.compile(loss='categorical_crossentropy', optimizer=self.optimizer, metrics=['categorical_accuracy'])
         

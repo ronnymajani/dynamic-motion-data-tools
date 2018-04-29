@@ -28,11 +28,11 @@ class RegularizedDeepGRU(ModelTemplate):
     def _build(self):
         # Model
         self.model = Sequential()
-        self.model.add(GRU(512, return_sequences=True, input_shape=self.input_shape))
+        self.model.add(GRU(1024, return_sequences=True, input_shape=self.input_shape))
         self.model.add(Dropout(0.5))
-        self.model.add(GRU(512))
+        self.model.add(GRU(1024))
         self.model.add(Dropout(0.5))
-        self.model.add(Dense(128))
+        self.model.add(Dense(256))
         self.model.add(Activation('relu'))
         self.model.add(Dense(10))
         self.model.add(Activation('softmax'))

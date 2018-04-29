@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Apr 10 15:04:33 2018
-
 @author: ronnymajani
 """
 
 
 from keras import Sequential
-from keras.layers import GRU
+from keras.layers import LSTM
 from keras.layers import Dense
 from keras.layers import Activation
 from keras.layers import Dropout
@@ -16,9 +14,9 @@ from keras.optimizers import Nadam
 from .model_template import ModelTemplate
 
 
-class RegularizedDeepGRU(ModelTemplate):
-    NAME = "Regularized Deep GRU"
-    PREFIX = "regularized_deep_gru"
+class RegularizedDeepLSTM(ModelTemplate):
+    NAME = "Regularized Deep LSTM"
+    PREFIX = "regularized_deep_lstm"
     
     def __init__(self, input_shape, **kwargs):
         ModelTemplate.__init__(self, input_shape, **kwargs)
@@ -28,10 +26,8 @@ class RegularizedDeepGRU(ModelTemplate):
     def _build(self):
         # Model
         self.model = Sequential()
-        self.model.add(GRU(512, return_sequences=True, input_shape=self.input_shape))
-        self.model.add(Dropout(0.5))
-        self.model.add(GRU(512))
-        self.model.add(Dropout(0.5))
+        self.model.add(LSTM(512, return_sequences=True, input_shape=self.input_shape, dropout=0.5, recurrent_dropout=0.01))
+        self.model.add(LSTM(512,  dropout=0.5, recurrent_dropout=0.01))
         self.model.add(Dense(128))
         self.model.add(Activation('relu'))
         self.model.add(Dense(10))
