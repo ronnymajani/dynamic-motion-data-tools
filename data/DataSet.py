@@ -62,6 +62,7 @@ class DataSet(object):
             raise ValueError("Validation Set percentage should be bigger than or equal to 0!")
         
         files = [os.path.join(folder, file) for file in os.listdir(folder)]
+        print("%d files found!" % len(files))
         # split files into train, valid and test sets
         files = np.random.permutation(files)
         num_users = len(files)

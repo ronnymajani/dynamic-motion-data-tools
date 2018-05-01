@@ -14,8 +14,8 @@ from keras.callbacks import ModelCheckpoint
 from .tfcallback import TensorBoardCallback
 
 class ModelTemplate(object):
-    DEFAULT_CHECKPOINTS_SAVE_PATH = os.path.join("..", "files", "checkpoints")
-    DEFAULT_TENSORBOARD_LOGS_PATH = os.path.join("..", "files", "tflogs")
+    DEFAULT_CHECKPOINTS_SAVE_PATH = os.path.join("files", "checkpoints")
+    DEFAULT_TENSORBOARD_LOGS_PATH = os.path.join("files", "tflogs")
     
     def __init__(self, input_shape, checkpoints_save_path=None, tensorboard_logs_path=None):
         # generic attributes
@@ -42,6 +42,7 @@ class ModelTemplate(object):
         self.callbacks = []
         self.input_shape = input_shape
         self.fit_params = None
+        self.callback_monitored_value = 'val_categorical_accuracy'
         
     def disable_callbacks(self):
         if self.model is not None:
@@ -134,8 +135,8 @@ class ModelTemplate(object):
     def _setup_callbacks(self):
         """ Setup necessary callbacks """
         # Checkpoint for saving best models
-        save_filename = os.path.join(self.checkpoints_dir, self.prefix + "-{epoch:02d}-{val_categorical_accuracy:.2f}.hdf5")
-        checkpointer = ModelCheckpoint(save_filename, monitor='val_categorical_accuracy', verbose=1, save_best_only=True, mode='max')
+        save_filename = os.path.join(self.checkpoints_dir, self.prefix + "-{epoch:02d}-{%s:.2f}.hdf5"%self.callback_monitored_value)
+        checkpointer = ModelCheckpoint(save_filename, monitor=self.callback_monitored_value, verbose=1, save_best_only=True, mode='max')
         self.callbacks.append(checkpointer)
         
         # Tensorboard Callback
