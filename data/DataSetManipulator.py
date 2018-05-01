@@ -1,7 +1,7 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import numpy as np
 from keras.preprocessing.sequence import pad_sequences
-import time
 
 class DataSetManipulator(object):
     DEFAULT_MASKING_VALUE = -99
