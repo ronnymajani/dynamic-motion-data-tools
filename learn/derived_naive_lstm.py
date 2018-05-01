@@ -31,6 +31,12 @@ dataset.expand(reverse_digit_sequence)
 # dataset.apply(lambda digit: convert_xy_to_derivative(digit, normalize=False))
 #dataset.apply(partial(convert_xy_to_derivative, normalize=True))
 
+#%%
+from data.DataSetManipulator import DataSetManipulator
+
+manip = DataSetManipulator(dataset, sequence_length=NUM_SAMPLES)
+#xt, yt = manip._create_data_for_generative_model(dataset.train_data[:1], dataset.train_labels[:1])
+X_train, Y_train, X_valid, Y_valid, X_test, Y_test = manip.create_dataset_for_generative_models()
 #%% Split Train, Valid, Test
 # Imports
 import numpy as np
