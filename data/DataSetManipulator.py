@@ -44,7 +44,7 @@ class DataSetManipulator(object):
         X_test, Y_test = self._create_data_for_generative_model(self.dataset.test_data, self.dataset.test_labels)
         
         # pad sequences with masking value
-        pad = lambda data: pad_sequences(data, maxlen=self._sequenceLength, dtype='float32', padding='post', truncating='post', value=self._maskingValue)
+        pad = lambda data: pad_sequences(data, maxlen=self._sequenceLength+1, dtype='float32', padding='post', truncating='post', value=self._maskingValue)
         X_train = pad(X_train)
         X_valid = pad(X_valid)
         X_test = pad(X_test)
