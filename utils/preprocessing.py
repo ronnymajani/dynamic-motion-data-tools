@@ -44,6 +44,33 @@ def apply_mean_centering(digit, inplace=False):
     return digit
 
 
+@preprocessingOperation("First Frame Centering")
+def apply_first_frame_centering(digit, inplace=False):
+    """ Translates the coordinates X, Y so their mean is aligned with the origin (0,0)
+    @param digit: The digit to apply the transformationt to
+    @param inplace: If True, the operation is performed inplace
+                    (this only works if digit is already a numpy array)
+                    If False, a copy of the given data is made
+    @returns The resulting digit as a copy if inplace is False
+    @returns The given digit itself after applying the transformation
+    """
+    if not isinstance(digit, np.ndarray) or inplace == False:
+        digit = np.array(digit)
+        
+    x_idx = DataSetContract.DigitSet.Frame.indices['X']
+    y_idx = DataSetContract.DigitSet.Frame.indices['Y']
+    
+    x = digit[:, x_idx]
+    y = digit[:, y_idx]
+    
+    first_x, first_y = x[0], y[0]
+    
+    digit[:, x_idx] = x - first_x
+    digit[:, y_idx] = y - first_y
+    
+    return digit
+
+
 @preprocessingOperation("Unit Distance Normalization")
 def apply_unit_distance_normalization(digit, inplace=False):
     """ Scales the coordinates (using minMax scaling) so the maximum euclidian distance from the 
