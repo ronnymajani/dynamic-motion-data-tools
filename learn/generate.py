@@ -43,9 +43,9 @@ manip = DataSetManipulator(dataset, sequence_length=NUM_SAMPLES)
 X_train, Y_train, X_valid, Y_valid, X_test, Y_test = manip.create_dataset_for_generative_models()
 
 #%% Build Model
-from models.gen_regularized_1024_gru import GenRegularized1024GRU
+from models.gen_regularized_64_gru import GenRegularized64GRU
 
-model = GenRegularized1024GRU(X_train.shape[1:], manip._maskingValue)
+model = GenRegularized64GRU(X_train.shape[1:], manip._maskingValue)
 model.batch_size = PARAM_BATCH_SIZE
 model.num_epochs = PARAM_NUM_EPOCHS
 model.initialize()
@@ -56,7 +56,16 @@ model.save_summary(dataset.get_recorded_operations())
 model.save_config()
 
 #%% Train Model
-model.train(X_train, Y_train, X_valid, Y_valid)
+import numpy as np
+# train only 0s
+num_to_train = 4
+to_train_idx = np.all(X_train[:,0] == [num_to_train, num_to_train], axis=1)
+to_valid_idx = np.all(X_valid[:,0] == [num_to_train, num_to_train], axis=1)
+X_to_train = X_train[to_train_idx]
+Y_to_train = Y_train[to_train_idx]
+X_to_valid = X_valid[to_valid_idx]
+Y_to_valid = Y_valid[to_valid_idx]
+model.train(X_to_train, Y_to_train, X_to_valid, Y_to_valid)
 
 #%% Model Evaluation
 # Test Score
@@ -74,11 +83,11 @@ from utils.plot import show_digit
 from keras.preprocessing.sequence import pad_sequences
 import matplotlib.pyplot as plt
 
-predict_number = 0
+predict_number = 4
 
-gen_digit = np.array([[predict_number, predict_number], [0, 0]])
+gen_digit = np.array([[predict_number, predict_number]])
 
-for i in range(2, NUM_SAMPLES):
+for i in range(1, NUM_SAMPLES):
     x = np.array([gen_digit])
     x = pad_sequences(x, maxlen=NUM_SAMPLES, dtype='float32', padding='post', truncating='post', value=manip._maskingValue)
     predicted_y = model.model.predict(x)
