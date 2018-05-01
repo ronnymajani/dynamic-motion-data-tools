@@ -16,12 +16,12 @@ class DataSetManipulator(object):
         new_X = []
         new_Y = []
         for dig_idx, dig in enumerate(X):
-            prefix = np.array([Y[dig_idx],Y[dig_idx]])
+            prefix = [[Y[dig_idx],Y[dig_idx]]]
             new_sub_seq = []
             new_sub_seq_label = []
             for i in range(len(dig)):
-                new_sub_seq.append(np.vstack((prefix, dig[:i])))  # create a subsequence from all previous elements in the sequence
-                new_sub_seq_label.append(dig[i])  # append next element in sequence as the label for this subsequence
+                new_sub_seq.append(prefix + dig[:i].tolist())  # create a subsequence from all previous elements in the sequence
+                new_sub_seq_label.append(dig[i].tolist())  # append next element in sequence as the label for this subsequence
             new_X += new_sub_seq
             new_Y += new_sub_seq_label
         return new_X, new_Y
@@ -44,9 +44,9 @@ class DataSetManipulator(object):
         X_test, Y_test = self._create_data_for_generative_model(self.dataset.test_data, self.dataset.test_labels)
         
         #TODO: mask values (with Keras maybe?)
-#        pad = lambda data: pad_sequences(data, maxlen=self._sequenceLength, padding='post', truncating='post', value=self._maskingValue)
-#        X_train = pad(X_train)
-#        X_valid = pad(X_valid)
-#        X_test = pad(X_test)
+        pad = lambda data: pad_sequences(data, maxlen=self._sequenceLength, dtype='float32', padding='post', truncating='post', value=self._maskingValue)
+        X_train = pad(X_train)
+        X_valid = pad(X_valid)
+        X_test = pad(X_test)
         
         return X_train, Y_train, X_valid, Y_valid, X_test, Y_test
