@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -67,7 +68,7 @@ class DataSet(object):
         test_split_index = round(num_users * (1.0 - test_set_percentage))
         if test_split_index == 0:
             raise ValueError("Test Set percentage too high; no data left for Train set!")
-        valid_split_index = round(num_users * (1.0 - validation_set_percentage))
+        valid_split_index = round(test_split_index * (1.0 - validation_set_percentage))
         if valid_split_index == 0:
             raise ValueError("Validation Set percentage too high; no data left for Train set!")
         train_valid_files = files[:test_split_index]
