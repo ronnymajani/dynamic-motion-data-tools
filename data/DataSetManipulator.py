@@ -49,4 +49,9 @@ class DataSetManipulator(object):
         X_valid = pad(X_valid)
         X_test = pad(X_test)
         
+        # convert Ys into numpy ndarrays
+        Y_train = np.array(Y_train)
+        Y_valid = np.array(Y_valid)
+        Y_test = np.array(Y_test)
+        
         return X_train, Y_train, X_valid, Y_valid, X_test, Y_test
