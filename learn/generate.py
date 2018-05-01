@@ -42,10 +42,21 @@ from data.DataSetManipulator import DataSetManipulator
 manip = DataSetManipulator(dataset, sequence_length=NUM_SAMPLES)
 X_train, Y_train, X_valid, Y_valid, X_test, Y_test = manip.create_dataset_for_generative_models()
 
+#%% Use only one digit
+import numpy as np
+# train only 0s
+num_to_train = 8
+to_train_idx = np.all(X_train[:,0] == [num_to_train, num_to_train], axis=1)
+to_valid_idx = np.all(X_valid[:,0] == [num_to_train, num_to_train], axis=1)
+X_to_train = X_train[to_train_idx, 1:]
+Y_to_train = Y_train[to_train_idx]
+X_to_valid = X_valid[to_valid_idx, 1:]
+Y_to_valid = Y_valid[to_valid_idx]
+
 #%% Build Model
 from models.gen_regularized_64_gru import GenRegularized64GRU
 
-model = GenRegularized64GRU(X_train.shape[1:], manip._maskingValue)
+model = GenRegularized64GRU(X_to_train.shape[1:], manip._maskingValue)
 model.batch_size = PARAM_BATCH_SIZE
 model.num_epochs = PARAM_NUM_EPOCHS
 model.initialize()
@@ -56,15 +67,6 @@ model.save_summary(dataset.get_recorded_operations())
 model.save_config()
 
 #%% Train Model
-import numpy as np
-# train only 0s
-num_to_train = 4
-to_train_idx = np.all(X_train[:,0] == [num_to_train, num_to_train], axis=1)
-to_valid_idx = np.all(X_valid[:,0] == [num_to_train, num_to_train], axis=1)
-X_to_train = X_train[to_train_idx]
-Y_to_train = Y_train[to_train_idx]
-X_to_valid = X_valid[to_valid_idx]
-Y_to_valid = Y_valid[to_valid_idx]
 model.train(X_to_train, Y_to_train, X_to_valid, Y_to_valid)
 
 #%% Model Evaluation
@@ -83,9 +85,9 @@ from utils.plot import show_digit
 from keras.preprocessing.sequence import pad_sequences
 import matplotlib.pyplot as plt
 
-predict_number = 4
+predict_number = 8
 
-gen_digit = np.array([[predict_number, predict_number]])
+gen_digit = np.array([[1, 1]])
 
 for i in range(1, NUM_SAMPLES):
     x = np.array([gen_digit])
@@ -94,6 +96,6 @@ for i in range(1, NUM_SAMPLES):
     gen_digit = np.vstack((gen_digit, predicted_y))
 
 plt.figure()
-show_digit(gen_digit[1:])
+show_digit(gen_digit)
 
 
