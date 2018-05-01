@@ -43,7 +43,7 @@ class DataSetManipulator(object):
         X_valid, Y_valid = self._create_data_for_generative_model(self.dataset.valid_data, self.dataset.valid_labels)
         X_test, Y_test = self._create_data_for_generative_model(self.dataset.test_data, self.dataset.test_labels)
         
-        #TODO: mask values (with Keras maybe?)
+        # pad sequences with masking value
         pad = lambda data: pad_sequences(data, maxlen=self._sequenceLength, dtype='float32', padding='post', truncating='post', value=self._maskingValue)
         X_train = pad(X_train)
         X_valid = pad(X_valid)

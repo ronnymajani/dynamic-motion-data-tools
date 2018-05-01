@@ -17,9 +17,9 @@ from keras.optimizers import Nadam
 from .model_template import ModelTemplate
 
 
-class GenRegularized64GRU(ModelTemplate):
-    NAME = "Gen Regularized 64 GRU"
-    PREFIX = "gen_regularized_64_gru"
+class GenRegularized1024GRU(ModelTemplate):
+    NAME = "Gen Regularized 1024 GRU"
+    PREFIX = "gen_regularized_1024_gru"
     
     def __init__(self, input_shape, masking_value, **kwargs):
         ModelTemplate.__init__(self, input_shape, **kwargs)
@@ -33,18 +33,18 @@ class GenRegularized64GRU(ModelTemplate):
         # Model
         self.model = Sequential()
         self.model.add(Masking(mask_value=self.masking_value, input_shape=self.input_shape))
-        self.model.add(GRU(64, return_sequences=True))
+        self.model.add(GRU(1024, return_sequences=True, input_shape=self.input_shape))
         self.model.add(Dropout(0.5))
-        self.model.add(GRU(64))
+        self.model.add(GRU(1024))
         self.model.add(Dropout(0.5))
-        self.model.add(Dense(32))
+        self.model.add(Dense(256))
         self.model.add(Activation('relu'))
         self.model.add(Dense(2))
         self.model.add(Activation('linear'))
         # Optimizer
-        self.optimizer = Nadam(lr=0.002, schedule_decay=0.15)
+        self.optimizer = Nadam(lr=0.0001, schedule_decay=0.07)
         # Compile Model
-        self.model.compile(loss='mse', optimizer=self.optimizer, metrics=['mse'])
+        self.model.compile(loss='mean_squared_error', optimizer=self.optimizer, metrics=['mse'])
         
     def train(self, X_train, Y_train, X_valid, Y_valid):
         # Train Model

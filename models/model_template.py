@@ -43,6 +43,7 @@ class ModelTemplate(object):
         self.input_shape = input_shape
         self.fit_params = None
         self.callback_monitored_value = 'val_categorical_accuracy'
+        self.callback_mode = 'max'
         
     def disable_callbacks(self):
         if self.model is not None:
@@ -136,7 +137,7 @@ class ModelTemplate(object):
         """ Setup necessary callbacks """
         # Checkpoint for saving best models
         save_filename = os.path.join(self.checkpoints_dir, self.prefix + "-{epoch:02d}-{%s:.2f}.hdf5"%self.callback_monitored_value)
-        checkpointer = ModelCheckpoint(save_filename, monitor=self.callback_monitored_value, verbose=1, save_best_only=True, mode='max')
+        checkpointer = ModelCheckpoint(save_filename, monitor=self.callback_monitored_value, verbose=1, save_best_only=True, mode=self.callback_mode)
         self.callbacks.append(checkpointer)
         
         # Tensorboard Callback
