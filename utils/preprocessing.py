@@ -186,8 +186,7 @@ def spline_interpolate_and_resample(digit, num_samples):
     return np.array([xi, yi]).T
 
 
-@preprocessingOperation("Rotate Digits")
-def rotate_digits(digit, radians):
+def _rotate_digit(digit, radians):
     """ Rotate a given digit around it's (0,0) a given number of radians """
     if not isinstance(digit, np.ndarray):
         digit = np.array(digit)
@@ -202,7 +201,21 @@ def rotate_digits(digit, radians):
     return np.matmul(digit, rotation_matrix)
     
     
+@preprocessingOperation("Rotate Digits")
+def rotate_digit(digit, degrees):
+    """ Given a list of angles (in degrees), create a new digit for each angle that is equal to the given digit
+    being rotated with that angle.
+    @param[in] digit: The digit to rotate
+    @param[in] degrees: A list of angles to rotate the digit with (each angle is applied separately)
+    @returns a list of rotated digits corresponding to the given angles
+    """
+    rads = np.deg2rad(degrees)
     
+    new_digits = []
+    for r in rads:
+        new_digits.append(_rotate_digit(digit, r))
+    
+    return new_digits
     
 
 

@@ -201,6 +201,86 @@ class DataSet(object):
         if apply_to_test_set:
             optype += "|test"
         self._record_operation(optype, operation)
+        
+        
+    def expand_many(self, operation, apply_to_test_set=True, append_to_end=False):
+        """ Apply a given digit operation to each digit in the dataset and append the results
+        to the dataset. This expects that the given operation will return a list of new digits instead of just one.
+        @param operation: a function to apply to each digit. should take one argument, which is
+          a single digit, and should return a digit.
+        @param append_to_end: if True, all generated data will be appended to the end of the training dataset
+          else, each generated new digit will be appended right after the original digit that produced it
+        """
+        # Train Set
+        if append_to_end:
+            data_len_pre_expand = len(self.train_data)
+            for digit_idx in range(data_len_pre_expand):
+                new_digits = operation(self.train_data[digit_idx])
+                for dig in new_digits:
+                    self.train_data.append(dig)
+                    self.train_labels.append(self.train_labels[digit_idx])
+        else:
+            new_train_data = []
+            new_train_labels = []
+            for digit, label in zip(self.train_data, self.train_labels):
+                new_train_data.append(digit)
+                new_train_labels.append(label)
+                new_digits = operation(digit)
+                for dig in new_digits:
+                    new_train_data.append(dig)
+                    new_train_labels.append(label)
+            self.train_data = new_train_data
+            self.train_labels = new_train_labels
+            
+        # Validation Set
+        if append_to_end:
+            data_len_pre_expand = len(self.valid_data)
+            for digit_idx in range(data_len_pre_expand):
+                new_digits = operation(self.valid_data[digit_idx])
+                for dig in new_digits:
+                    self.valid_data.append(dig)
+                    self.valid_labels.append(self.valid_labels[digit_idx])
+        else:
+            new_valid_data = []
+            new_valid_labels = []
+            for digit, label in zip(self.valid_data, self.valid_labels):
+                new_valid_data.append(digit)
+                new_valid_labels.append(label)
+                new_digits = operation(digit)
+                for dig in new_digits:
+                    new_valid_data.append(dig)
+                    new_valid_labels.append(label)
+            self.valid_data = new_valid_data
+            self.valid_labels = new_valid_labels    
+        
+        # Test Set
+        if apply_to_test_set:
+            if append_to_end:
+                data_len_pre_expand = len(self.test_data)
+                for digit_idx in range(data_len_pre_expand):
+                    new_digits = operation(self.test_data[digit_idx])
+                    for dig in new_digits:
+                        self.test_data.append(dig)
+                        self.test_labels.append(self.test_labels[digit_idx])
+            else:
+                new_test_data = []
+                new_test_labels = []
+                for digit, label in zip(self.test_data, self.test_labels):
+                    new_test_data.append(digit)
+                    new_test_labels.append(label)
+                    new_digits = operation(digit)
+                    for dig in new_digits:
+                        new_test_data.append(dig)
+                        new_test_labels.append(label)
+                self.test_data = new_test_data
+                self.test_labels = new_test_labels
+            
+        # save name of applied operation
+        optype = "expand:train/valid"
+        if apply_to_test_set:
+            optype += "|test"
+        self._record_operation(optype, operation)
+
     
     def onehot_encode_labels(self):
         """ Onehot encodes this datasets labels using scikit learn's OneHotEncoder
