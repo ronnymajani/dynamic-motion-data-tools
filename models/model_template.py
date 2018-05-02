@@ -14,25 +14,37 @@ from keras.callbacks import ModelCheckpoint
 from .tfcallback import TensorBoardCallback
 
 class ModelTemplate(object):
-    DEFAULT_CHECKPOINTS_SAVE_PATH = os.path.join("files", "checkpoints")
-    DEFAULT_TENSORBOARD_LOGS_PATH = os.path.join("files", "tflogs")
+    DEFAULT_OUTPUT_PATH = "files"
+    DEFAULT_CHECKPOINTS_FOLDER = "checkpoints"
+    DEFAULT_TENSORBOARD_FOLDER = "tflogs"
     
-    def __init__(self, input_shape, checkpoints_save_path=None, tensorboard_logs_path=None):
+    def __init__(self, input_shape, output_path=None, checkpoints_save_path=None, tensorboard_logs_path=None):
         # generic attributes
         self.name = "Model Template"
         self.prefix = "model"
         self.timestamp = time.time()
         self._use_callbacks = True
         # folders and paths
-        if checkpoints_save_path is None:
-            self.checkpoints_save_path = ModelTemplate.DEFAULT_CHECKPOINTS_SAVE_PATH
+        if output_path is None:
+            if checkpoints_save_path is None:
+                self.checkpoints_save_path = os.path.join(self.DEFAULT_OUTPUT_PATH, self.DEFAULT_CHECKPOINTS_FOLDER)
+            else:
+                self.checkpoints_save_path = checkpoints_save_path
+                
+            if tensorboard_logs_path is None:
+                self.tensorboard_logs_path = os.path.join(self.DEFAULT_OUTPUT_PATH, self.DEFAULT_TENSORBOARD_FOLDER)
+            else:
+                self.tensorboard_logs_path = tensorboard_logs_path
         else:
-            self.checkpoints_save_path = checkpoints_save_path
-            
-        if tensorboard_logs_path is None:
-            self.tensorboard_logs_path = ModelTemplate.DEFAULT_TENSORBOARD_LOGS_PATH
-        else:
-            self.tensorboard_logs_path = tensorboard_logs_path
+            if checkpoints_save_path is None:
+                self.checkpoints_save_path = os.path.join(output_path, self.DEFAULT_CHECKPOINTS_FOLDER)
+            else:
+                self.checkpoints_save_path = checkpoints_save_path
+                
+            if tensorboard_logs_path is None:
+                self.tensorboard_logs_path = os.path.join(output_path, self.DEFAULT_TENSORBOARD_FOLDER)
+            else:
+                self.tensorboard_logs_path = tensorboard_logs_path
             
         # model attributes
         self.model = None
