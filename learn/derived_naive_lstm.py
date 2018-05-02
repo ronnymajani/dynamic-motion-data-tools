@@ -21,6 +21,7 @@ dataset_folder_path = os.path.join("files", "dataset")
 from utils.preprocessing import *
 from data.DataSet import DataSet
 from functools import partial
+import numpy as np
 
 dataset = DataSet()
 dataset.load(dataset_folder_path, test_set_percentage=0.333, validation_set_percentage=0)
@@ -28,6 +29,7 @@ dataset.apply(apply_mean_centering)
 dataset.apply(apply_unit_distance_normalization)
 #dataset.apply(partial(normalize_pressure_value, max_pressure_val=512))
 dataset.apply(partial(spline_interpolate_and_resample, num_samples=NUM_SAMPLES))
+dataset.expand_many(partial(rotate_digit, degrees=[5, 10, 15, 45, -5, -10, -15, -45]))
 dataset.expand(reverse_digit_sequence)
 # dataset.apply(lambda digit: convert_xy_to_derivative(digit, normalize=False))
 #dataset.apply(partial(convert_xy_to_derivative, normalize=True))
