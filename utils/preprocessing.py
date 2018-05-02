@@ -186,3 +186,23 @@ def spline_interpolate_and_resample(digit, num_samples):
     return np.array([xi, yi]).T
 
 
+@preprocessingOperation("Rotate Digits")
+def rotate_digits(digit, radians):
+    """ Rotate a given digit around it's (0,0) a given number of radians """
+    if not isinstance(digit, np.ndarray):
+        digit = np.array(digit)
+    
+    c = np.cos(radians)
+    s = np.sin(radians)
+        
+    rotation_matrix = np.array([[c, -s],
+                                [s, c]])
+    
+    # row major multiplication
+    return np.matmul(digit, rotation_matrix)
+    
+    
+    
+    
+
+
