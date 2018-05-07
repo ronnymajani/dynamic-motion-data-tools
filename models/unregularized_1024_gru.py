@@ -18,9 +18,9 @@ import keras.regularizers
 from .model_template import ModelTemplate
 
 
-class Regularized1024GRU(ModelTemplate):
-    NAME = "Regularized 1024 GRU"
-    PREFIX = "regularized_1024_gru"
+class UnRegularized1024GRU(ModelTemplate):
+    NAME = "UnRegularized 1024 GRU"
+    PREFIX = "unregularized_1024_gru"
     
     def __init__(self, input_shape, **kwargs):
         ModelTemplate.__init__(self, input_shape, **kwargs)
@@ -30,13 +30,19 @@ class Regularized1024GRU(ModelTemplate):
     def _build(self):
         # Model
         self.model = Sequential()
-        self.model.add(GRU(1024, return_sequences=True, reset_after=True,
+        self.model.add(GRU(1024, return_sequences=True,
+                           kernel_regularizer=keras.regularizers.l2(0.001),
                            input_shape=self.input_shape))
-        self.model.add(Dropout(0.5))
-        self.model.add(GRU(1024, return_sequences=True, reset_after=True))
-        self.model.add(Dropout(0.5))
-        self.model.add(Dense(256))
+        self.model.add(Dropout(0.10))
+        self.model.add(GRU(1024, return_sequences=True, reset_after=True,
+                           kernel_regularizer=keras.regularizers.l2(0.001)))
+        self.model.add(Dropout(0.10))
+        self.model.add(GRU(1024, reset_after=True,
+                           kernel_regularizer=keras.regularizers.l2(0.001)))
+        self.model.add(Dropout(0.10))
+        self.model.add(Dense(512))
         self.model.add(Activation('relu'))
+        self.model.add(Dropout(0.10))
         self.model.add(Dense(10))
         self.model.add(Activation('softmax'))
         # Optimizer

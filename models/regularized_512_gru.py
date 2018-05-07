@@ -44,7 +44,6 @@ class Regularized512GRU(ModelTemplate):
         self.model.add(Activation('softmax'))
         # Optimizer
         self.optimizer = Nadam(lr=0.0001, schedule_decay=0.0005)
-        self.model.add(Dropout(0.05))
         # Compile Model
         self.model.compile(loss='categorical_crossentropy', optimizer=self.optimizer, metrics=['categorical_accuracy'])
         
