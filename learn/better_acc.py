@@ -70,3 +70,7 @@ mymodel.save_config()
 
 #%%
 mymodel.train(X_train, Y_train, X_valid, Y_valid)
+
+#%% Evaluation
+test_score = tuple(mymodel.model.evaluate(X_test, Y_test))
+print("Test Loss: %.3f, Test Acc: %.3f%%" % (test_score[0], test_score[1] * 100))
