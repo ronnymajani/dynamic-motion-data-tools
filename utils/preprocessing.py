@@ -149,16 +149,12 @@ def reverse_digit_sequence(digit, inplace=False):
     return digit[::-1]
 
 
-@preprocessingOperation("B-Spine Interpolation and Resampling (Warning: Deletes time and pressure features!)")
-def spline_interpolate_and_resample(digit, num_samples):
-    """ Performs B-Spline interpolation on the given digit, then resamples new uniformly distributed points from the
-    newly calculated spline, and sets returns a new digit with the resampled X, Y values.
+
+@preprocessingOperation("Clean Digit from Repeated (Overlapping) points")
+def clean_repeat_points(digit):
+    """
     @note: this function completely ignores and disposes of the other features (time and pressure)
         and the resulting digit only contains X and Y
-    @param[in] digit: The digit to interpolate and resample from
-    @param[in] num_samples: The number of samples to take from the calculated spline.
-    @returns a 2D array, with its first column set to the resulting X values,
-        and its Y column set to the corresponding Y values
     """
     if not isinstance(digit, np.ndarray):
         digit = np.array(digit)
@@ -180,8 +176,34 @@ def spline_interpolate_and_resample(digit, num_samples):
     xn, yn = xp[:-1], yp[:-1]
     xn = xn[(jump > 0) & (smooth_jump < limit)]
     yn = yn[(jump > 0) & (smooth_jump < limit)]
+    
+    return np.array([xn, yn]).T
+
+
+
+@preprocessingOperation("B-Spine Interpolation and Resampling (Warning: Deletes time and pressure features!)")
+def spline_interpolate_and_resample(digit, num_samples, clean_points=True):
+    """ Performs B-Spline interpolation on the given digit, then resamples new uniformly distributed points from the
+    newly calculated spline, and sets returns a new digit with the resampled X, Y values.
+    @note: this function completely ignores and disposes of the other features (time and pressure)
+        and the resulting digit only contains X and Y
+    @param[in] digit: The digit to interpolate and resample from
+    @param[in] num_samples: The number of samples to take from the calculated spline.
+    @param[in] clean_points: if True, the function will clean the given digits from repeated points
+        to not get an error with the spline function. If set to False, it is assumed the digit has already been cleaned.
+    @returns a 2D array, with its first column set to the resulting X values,
+        and its Y column set to the corresponding Y values
+    """
+    if not isinstance(digit, np.ndarray):
+        digit = np.array(digit)
+        
     # Generate B-Spline
-    tck, u = interpolate.splprep([xn, yn], s=0)
+    if clean_points:
+        line = clean_repeat_points(digit).T
+    else:
+        line = digit.T
+        
+    tck, u = interpolate.splprep(line, s=0)
     xi, yi = interpolate.splev(np.linspace(0, 1, num_samples), tck)
     return np.array([xi, yi]).T
 
@@ -217,5 +239,7 @@ def rotate_digit(digit, degrees):
     
     return new_digits
     
+
+
 
 
