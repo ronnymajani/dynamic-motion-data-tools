@@ -18,9 +18,9 @@ import keras.regularizers
 from .model_template import ModelTemplate
 
 
-class UnRegularized512GRU(ModelTemplate):
-    NAME = "UnRegularized 512 GRU"
-    PREFIX = "unregularized_512_gru"
+class Regularized3x512GRU(ModelTemplate):
+    NAME = "Regularized 3x512 GRU"
+    PREFIX = "regularized_3x512_gru"
     
     def __init__(self, input_shape, **kwargs):
         ModelTemplate.__init__(self, input_shape, **kwargs)

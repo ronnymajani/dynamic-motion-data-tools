@@ -32,7 +32,7 @@ dataset.apply(clean_repeat_points)
 #%% Load Model
 from keras.models import load_model
 
-TRAINED_MODEL = os.path.join("files", "checkpoints", "1525696834.4091375", "unregularized_512_gru-30-0.97.hdf5")
+TRAINED_MODEL = os.path.join("files", "checkpoints", "1525696834.4091375", "regularized_3x512_gru-30-0.97.hdf5")
 model = load_model(TRAINED_MODEL)
 
 #%%

@@ -57,10 +57,10 @@ print("Test Labels Shape:", Y_test.shape)
 PARAM_NUM_EPOCHS = 30
 PARAM_BATCH_SIZE = 500
 
-from models.unregularized_512_gru import UnRegularized512GRU
+from models.regularized_3x512_gru import Regularized3x512GRU
 import os.path
 
-mymodel = UnRegularized512GRU(X_train.shape[1:])
+mymodel = Regularized3x512GRU(X_train.shape[1:])
 mymodel.batch_size = PARAM_BATCH_SIZE
 mymodel.num_epochs = PARAM_NUM_EPOCHS
 mymodel.initialize()

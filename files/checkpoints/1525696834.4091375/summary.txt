@@ -1,4 +1,4 @@
-UnRegularized 512 GRU
+Regularized 3x512 GRU
 2018-05-07 15:40:34
 
 ----------

@@ -148,7 +148,7 @@ class ModelTemplate(object):
     def _setup_callbacks(self):
         """ Setup necessary callbacks """
         # Checkpoint for saving best models
-        save_filename = os.path.join(self.checkpoints_dir, self.prefix + "-{epoch:02d}-{%s:.2f}.hdf5"%self.callback_monitored_value)
+        save_filename = os.path.join(self.checkpoints_dir, self.prefix + "-{epoch:02d}-{%s:.3f}.hdf5"%self.callback_monitored_value)
         checkpointer = ModelCheckpoint(save_filename, monitor=self.callback_monitored_value, verbose=1, save_best_only=True, mode=self.callback_mode)
         self.callbacks.append(checkpointer)
         
