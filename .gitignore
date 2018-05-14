@@ -179,6 +179,6 @@ fabric.properties
 
 files/checkpoints/**/*.hdf5
 
-files/tflogs/
+# files/tflogs/
 
 files/dataset/

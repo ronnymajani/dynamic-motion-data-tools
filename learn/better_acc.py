@@ -74,3 +74,13 @@ mymodel.train(X_train, Y_train, X_valid, Y_valid)
 #%% Evaluation
 test_score = tuple(mymodel.model.evaluate(X_test, Y_test))
 print("Test Loss: %.3f, Test Acc: %.3f%%" % (test_score[0], test_score[1] * 100))
+
+#%% Model Evaluation
+from utils.evaluation import get_evaluation_metrics, get_confusion_matrix
+# Recall, Precision, F1_Score on Validation set
+Y_predicted_valid = mymodel.model.predict_classes(X_valid, verbose=1)
+rpf = get_evaluation_metrics(Y_valid, Y_predicted_valid)
+print(rpf)
+
+# Confusion Matrix
+confmat = get_confusion_matrix(Y_valid, Y_predicted_valid, plot=True)

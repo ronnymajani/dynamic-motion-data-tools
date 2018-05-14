@@ -1,0 +1,57 @@
+Regularized 3x512 GRU
+2018-05-14 23:12:01
+
+----------
+
+* [modify:train/valid|test] (apply_mean_centering):
+	Mean Centering
+
+* [modify:train/valid|test] (spline_interpolate_and_resample):
+	B-Spine Interpolation and Resampling (Warning: Deletes time and pressure features!)
+	>> args: ()
+	>> keywords: {'num_samples': 50}
+
+* [expand:train/valid|test] (rotate_digit):
+	Rotate Digits
+	>> args: ()
+	>> keywords: {'degrees': [5, 10, 15, 45, -5, -10, -15, -45]}
+
+----------
+
+Optimizer: <class 'keras.optimizers.Nadam'>
+Batch Size: 500
+Number of Epochs: 70
+
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+gru_13 (GRU)                 (None, 50, 512)           791040    
+_________________________________________________________________
+dropout_17 (Dropout)         (None, 50, 512)           0         
+_________________________________________________________________
+gru_14 (GRU)                 (None, 50, 512)           1575936   
+_________________________________________________________________
+dropout_18 (Dropout)         (None, 50, 512)           0         
+_________________________________________________________________
+gru_15 (GRU)                 (None, 512)               1575936   
+_________________________________________________________________
+dropout_19 (Dropout)         (None, 512)               0         
+_________________________________________________________________
+dense_9 (Dense)              (None, 256)               131328    
+_________________________________________________________________
+activation_9 (Activation)    (None, 256)               0         
+_________________________________________________________________
+dropout_20 (Dropout)         (None, 256)               0         
+_________________________________________________________________
+dense_10 (Dense)             (None, 10)                2570      
+_________________________________________________________________
+activation_10 (Activation)   (None, 10)                0         
+=================================================================
+Total params: 4,076,810
+Trainable params: 4,076,810
+Non-trainable params: 0
+_________________________________________________________________
+
+
+----------
+
