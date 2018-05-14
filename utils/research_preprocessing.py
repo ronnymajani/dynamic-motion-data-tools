@@ -4,11 +4,10 @@
 import numpy as np
 from data.contract import DataSetContract
 from utils.decorators import preprocessingOperation
-from scipy import interpolate, ndimage
 
 
 @preprocessingOperation("Add Occlusions")
-def add_occlusions(digit, dropout_percentage, min_len=4):
+def add_occlusions(digit, dropout_percentage, min_len=5):
     """ Adds occlusions to the given digit (drops random frames)
     @param digit: The digit to apply the occlusion to
     @param dropout_percentage: the percentage of the frames to dropout
