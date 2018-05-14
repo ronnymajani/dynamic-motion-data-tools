@@ -1,0 +1,8 @@
+Tried 20 different percentages between 0% and 100%
+minimum length of a digit is 4
+cubic spline interpolation
+applied all preprocessing except for clean digit points after occlusions.
+applied clean points preprocessing before occlusions because we want 
+at least 4 unique points in the sequence
+(since spline interpolation deletes repeated points before interpolation,
+so we need at least 4 points left to be able to calculate the spline)

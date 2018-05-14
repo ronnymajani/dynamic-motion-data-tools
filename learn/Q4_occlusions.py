@@ -19,16 +19,6 @@ print("Training Data Len:", len(dataset.train_data))
 print("Validation Data Len:", len(dataset.valid_data))
 print("Test Data Len:", len(dataset.test_data))
 
-#%%
-NUM_SAMPLES = 50
-ANGLES_TO_ROTATE = [5, 10, 15, 45, -5, -10, -15, -45]
-
-from utils.preprocessing import *
-from functools import partial
-dataset.apply(apply_mean_centering)
-dataset.apply(apply_unit_distance_normalization)
-dataset.apply(clean_repeat_points)
-
 #%% Load Model
 from keras.models import load_model
 
@@ -37,7 +27,15 @@ model = load_model(TRAINED_MODEL)
 
 #%%
 import numpy as np
+from utils.preprocessing import *
+from functools import partial
 from utils.research_preprocessing import add_occlusions
+
+dataset.apply(clean_repeat_points)
+
+NUM_SAMPLES = 50
+ANGLES_TO_ROTATE = [5, 10, 15, 45, -5, -10, -15, -45]
+
 
 DROPOUTS_TO_TRY = np.linspace(0.0, 0.99, 20)
 
@@ -46,6 +44,8 @@ scores = []
 for drop in DROPOUTS_TO_TRY:
     curr = dataset.copy()
     curr.apply(partial(add_occlusions, dropout_percentage=drop))
+    curr.apply(apply_mean_centering)
+    curr.apply(apply_unit_distance_normalization)
     curr.apply(partial(spline_interpolate_and_resample, num_samples=NUM_SAMPLES))
     curr.expand(reverse_digit_sequence)
     X_train = np.array(curr.train_data)
