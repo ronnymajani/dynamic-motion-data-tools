@@ -91,13 +91,13 @@ for mean in MEANS_TO_TRY:
 plt.legend(title="Mean")
 
 
-#%%
+#%% Plot Gaussian Distributions
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.mlab as mlab
 
 means = [0.0]
-stds = np.linspace(0.0, 1000, 5)
+stds = [100, 250, 500, 750, 1000]
 
 for mean in means:
     for std in stds:
@@ -106,7 +106,47 @@ for mean in means:
         plt.plot(x,mlab.normpdf(x, mean, sigma), label=str(std))
         plt.show()
 
-plt.xlabel("Mean")
-plt.ylabel("Value of Noise")
+plt.xlabel("Noise Value")
+plt.ylabel("Probability of selection")
 plt.legend(title="Standard Deviation")
 
+
+#%%
+import matplotlib.pyplot as plt
+import numpy as np
+from utils.plot import show_digit
+from matplotlib.font_manager import FontProperties
+
+DIGIT_IDX = 1627
+#DIGIT_IDX = 326
+digit = dataset.train_data[DIGIT_IDX]
+show_digit(digit, padding=200)
+
+stds = [200, 100, 50]
+colors = ['g', 'b', 'r']
+means = [20, -50, 0]
+
+for mean, std, c in zip(means, stds, colors):
+    for frame in digit:
+        point = np.array(frame[:2])
+        point += [mean, mean]
+        circle = plt.Circle(point, std, color=c, fill=True, alpha=0.05)
+        plt.gca().add_artist(circle)
+
+drawing_pad_width = 5105.0
+drawing_pad_height = 3713.0
+drawing_area_root = np.sqrt(drawing_pad_width * drawing_pad_height)
+stdz = (np.array(stds) / drawing_area_root) * 100.0
+meanz = (np.array(means) / drawing_area_root) * 100.0
+
+ca = plt.Circle([0,0], 1, color=colors[0], alpha=0.3)
+cb = plt.Circle([0,0], 1, color=colors[1], alpha=0.3)
+cc = plt.Circle([0,0], 1, color=colors[2], alpha=0.3)
+
+fontP = FontProperties()
+fontP.set_size('small')
+plt.legend((ca,cb,cc), 
+           ("mean: %.0f (%.02f%%), std: %.0f (%.0f%%)"%(means[0], meanz[0], stds[0], stdz[0]), 
+            "mean: %.0f (%.02f%%), %.0f (%.0f%%)"%(means[1], meanz[1], stds[1], stdz[1]), 
+            "mean: %.0f (%.02f%%), %.0f (%.0f%%)"%(means[2], meanz[2], stds[2], stdz[2])),
+           title='Noise Range', loc='lower right', prop=fontP)
