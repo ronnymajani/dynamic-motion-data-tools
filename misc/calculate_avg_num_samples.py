@@ -1,14 +1,15 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Sun Apr 22 17:01:13 2018
 
-@author: ronnymajani
-"""
-import os, sys
-# so the script can access the parent directory
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+# allow the notebook to access the parent directory so we can import the other modules
+# https://stackoverflow.com/a/35273613
+import os
+import sys
+nb_dir = os.path.split(os.getcwd())[0]
+if nb_dir not in sys.path:
+    sys.path.append(nb_dir)
+    
+import os
+dataset_folder_path = os.path.join("files", "dataset")
 
 
 if __name__ == "__main__":
@@ -21,15 +22,21 @@ if __name__ == "__main__":
 	#%%
 	from data.DataSet import DataSet
 	dataset = DataSet()
-	dataset.load(dataset_folder_path, test_set_percentage=0)
+	dataset.load(dataset_folder_path, test_set_percentage=0, validation_set_percentage=0)
 
 	#%%
-	print(len(dataset.train_data))
-	print(len(dataset.test_data))
+    print(len(dataset.train_data))
+    print(len(dataset.valid_data))
+    print(len(dataset.test_data))
 
 	#%%
-	total = 0
-	for digit in dataset.train_data:
-		total += len(digit)
-	avg = total / len(dataset.train_data)
-	print(avg)
+    import numpy as np
+    total = []
+    for digit in dataset.train_data:
+        total.append(len(digit))
+    avg = np.mean(total)
+    std = np.std(total)
+    
+    print(avg)
+    print(std)
+

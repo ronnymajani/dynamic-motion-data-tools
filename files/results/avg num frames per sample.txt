@@ -1,0 +1,7 @@
+14/05/2018
+
+Average over 36 users:
+42.3727777778 (+/- 13.8788581445)
+
+Average ~= 42 frames per sample
+Standard Deviation ~= 14 frames per sample
