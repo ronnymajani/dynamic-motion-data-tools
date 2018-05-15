@@ -10,7 +10,7 @@ import utils.support
 from models.model_template import ModelTemplate
 import copy
 
-def get_confusion_matrix(Y_true, Y_predicted, y_true_is_one_hot=True, y_predicted_is_one_hot=False, plot=False):
+def get_confusion_matrix(Y_true, Y_predicted, y_true_is_one_hot=True, y_predicted_is_one_hot=False, plot=False, as_percentage=True):
     """ Calculates the confusion matrix for the given model and data.
     @param[in] Y_true: the correct "true" labels
     @param[in] Y_predicted: the labels predicted by the model 
@@ -26,10 +26,13 @@ def get_confusion_matrix(Y_true, Y_predicted, y_true_is_one_hot=True, y_predicte
     
     confmat = confusion_matrix(Y_true, Y_predicted)
     
+    if as_percentage:
+        confmat = (confmat / confmat.sum(axis=1).reshape(-1, 1)) * 100.0
+    
     if plot:
         utils.plot.show_mat(confmat, xlabel="True", ylabel="Predicted", title="Confusion Matrix", 
                             show_grid=True, show_colorbar=True, uniform_ticks=True, hide_ticks=True, 
-                            show_vals=True, show_vals_as_int=True)
+                            show_vals=True, show_vals_as_int=False)
     return confmat
         
     

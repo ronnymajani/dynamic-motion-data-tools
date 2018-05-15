@@ -78,11 +78,12 @@ def show_digit(digit, label=None, show_points=True, show_lines=True, use_time_as
 
 def show_mat(mat, xlabel="", ylabel="", title=None, uniform_ticks=False, 
              hide_ticks=False, show_grid=False, show_vals=False, show_vals_as_int=False,
-             show_colorbar=False, cmap=matplotlib.cm.Spectral):
+             show_colorbar=False, cmap=matplotlib.cm.Greys):
     ylen = len(mat)
     xlen = len(mat[0])
     # show matrix
-    plt.matshow(mat, cmap=cmap)
+    plt.figure(figsize=(10,5))
+    plt.matshow(mat, cmap=cmap, fignum=1)
     ax = plt.gca()
     fig = plt.gcf()
     # show values in grid
@@ -90,9 +91,9 @@ def show_mat(mat, xlabel="", ylabel="", title=None, uniform_ticks=False,
         if show_vals_as_int:
             fmt = "{:d}"
         else:
-            fmt = "{:0.1f}"
+            fmt = "{:0.0f}%"
         for (i, j), z in np.ndenumerate(mat):
-            ax.text(j, i, fmt.format(z), ha='center', va='center')
+            ax.text(j, i, fmt.format(z), ha='center', va='center', color='red', alpha=0.7)
     # show colorbar
     if show_colorbar:
         plt.colorbar()
