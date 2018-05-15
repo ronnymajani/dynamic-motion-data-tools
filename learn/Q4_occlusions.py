@@ -47,6 +47,7 @@ for drop in DROPOUTS_TO_TRY:
     curr.apply(apply_mean_centering)
     curr.apply(apply_unit_distance_normalization)
     curr.apply(partial(spline_interpolate_and_resample, num_samples=NUM_SAMPLES))
+    curr.expand_many(partial(rotate_digit, degrees=ANGLES_TO_ROTATE))
     curr.expand(reverse_digit_sequence)
     X_train = np.array(curr.train_data)
     # Convert labels to numpy array and OneHot encode them
@@ -56,7 +57,9 @@ for drop in DROPOUTS_TO_TRY:
     print("occlusion percentage: %.2f%%,   acc: %.3f%%" % (drop*100.0, score*100.0))
     scores.append(score)
 
-
+import pickle
+with open(os.path.join("files", "pickles", "Q4_scores.pkl"), 'wb') as fd:
+    pickle.dump(scores, fd)
 
 
 #%%
