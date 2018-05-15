@@ -19,12 +19,6 @@ print("Training Data Len:", len(dataset.train_data))
 print("Validation Data Len:", len(dataset.valid_data))
 print("Test Data Len:", len(dataset.test_data))
 
-#%%
-NUM_SAMPLES = 50
-ANGLES_TO_ROTATE = [5, 10, 15, 45, -5, -10, -15, -45]
-
-from utils.preprocessing import *
-from functools import partial
 
 #%% Load Model
 from keras.models import load_model
@@ -35,6 +29,11 @@ model = load_model(TRAINED_MODEL)
 #%%
 import numpy as np
 from utils.research_preprocessing import add_noise
+from utils.preprocessing import *
+from functools import partial
+
+NUM_SAMPLES = 50
+ANGLES_TO_ROTATE = [5, 10, 15, 45, -5, -10, -15, -45]
 
 MEANS_TO_TRY = [0.0, 100, -100, 250, -250]
 STD_TO_TRY = np.linspace(0.0, 1000, 20)
@@ -50,6 +49,7 @@ for mean in MEANS_TO_TRY:
         curr.apply(apply_unit_distance_normalization)
         curr.apply(clean_repeat_points)
         curr.apply(partial(spline_interpolate_and_resample, num_samples=NUM_SAMPLES))
+        curr.expand_many(partial(rotate_digit, degrees=ANGLES_TO_ROTATE))
         curr.expand(reverse_digit_sequence)
         X_train = np.array(curr.train_data)
         # Convert labels to numpy array and OneHot encode them
@@ -60,7 +60,7 @@ for mean in MEANS_TO_TRY:
         scores[mean].append(score)
 
 import pickle
-with open(os.path.join("files", "pickles", "Q8_scores"), 'wb') as fd:
+with open(os.path.join("files", "pickles", "Q8_scores.pkl"), 'wb') as fd:
     pickle.dump(scores, fd)
     
 
