@@ -86,6 +86,7 @@ plt.axhline(0, xmin=-2, xmax=2, color='grey', alpha=0.1)
 plt.axvline(0, ymin=-2, ymax=2, color='grey', alpha=0.1)
 plt.savefig("files/figs/pp_spline.pdf")
 plt.clf()
+
 #%% augmentation graphics
 reverse_digit = reverse_digit_sequence(spline_digit)
 show_digit(reverse_digit, padding=0.03, show_lines=False)
@@ -98,3 +99,6 @@ for i, rd in enumerate(rotated_digits):
     show_digit(rd, padding=0.03, show_lines=False)
     plt.savefig("files/figs/ag_rotate_%d.pdf"%i)
     plt.clf()
+
+
+    
