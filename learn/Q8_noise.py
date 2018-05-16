@@ -96,19 +96,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.mlab as mlab
 
-means = [0.0]
+means = [-500, 0.0, -1000, 2250, 400]
 stds = [100, 250, 500, 750, 1000]
 
-for mean in means:
-    for std in stds:
-        sigma = std
-        x = np.linspace(mean - 3*sigma, mean + 3*sigma, 100)
-        plt.plot(x,mlab.normpdf(x, mean, sigma), label=str(std))
-        plt.show()
+for mean, std in zip(means, stds):
+    sigma = std
+    x = np.linspace(mean - 3*sigma, mean + 3*sigma, 100)
+    plt.plot(x,mlab.normpdf(x, mean, sigma), label="%d, %d"%(mean, std))
+    plt.show()
 
 plt.xlabel("Noise Value")
 plt.ylabel("Probability of selection")
-plt.legend(title="Standard Deviation")
+plt.legend(title="Mean, Standard Deviation")
 
 
 #%%
