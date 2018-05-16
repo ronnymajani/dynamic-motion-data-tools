@@ -39,10 +39,10 @@ dataset.apply(apply_unit_distance_normalization)
 
 ANGLES_TO_ROTATE = [5, 10, 15, 45, -5, -10, -15, -45]
 
-NUM_EPOCHS = 20
-PARAM_BATCH_SIZE = 500
+NUM_EPOCHS = 30
+PARAM_BATCH_SIZE = 300
 
-NUM_SAMPLES_TO_TRY = [10, 25, 50, 75, 100, 150, 200, 300]
+NUM_SAMPLES_TO_TRY = [300, 200, 150, 100, 75, 50, 25, 10]
 
 scores_valid = []
 scores_test = []
@@ -52,12 +52,13 @@ for num_samples in NUM_SAMPLES_TO_TRY:
     curr = dataset.copy()
     curr.apply(partial(spline_interpolate_and_resample, num_samples=num_samples))
     curr.expand(reverse_digit_sequence)
+    curr.expand_many(partial(rotate_digit, degrees=ANGLES_TO_ROTATE))
     
-    X_train = np.array(dataset.train_data)
-    X_valid = np.array(dataset.valid_data)
-    X_test = np.array(dataset.test_data)
+    X_train = np.array(curr.train_data)
+    X_valid = np.array(curr.valid_data)
+    X_test = np.array(curr.test_data)
     # Convert labels to numpy array and OneHot encode them
-    encoder, Y_train, Y_valid, Y_test = dataset.onehot_encode_labels()
+    encoder, Y_train, Y_valid, Y_test = curr.onehot_encode_labels()
     # evaluate
     
     mymodel = Regularized3x512GRU(X_train.shape[1:])
