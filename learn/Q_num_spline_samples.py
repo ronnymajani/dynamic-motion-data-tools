@@ -19,12 +19,6 @@ print("Training Data Len:", len(dataset.train_data))
 print("Validation Data Len:", len(dataset.valid_data))
 print("Test Data Len:", len(dataset.test_data))
 
-#%% Load Model
-from keras.models import load_model
-
-TRAINED_MODEL = os.path.join("files", "checkpoints", "1525696834.4091375", "regularized_3x512_gru-30-0.97.hdf5")
-model = load_model(TRAINED_MODEL)
-
 #%%
 import numpy as np
 from utils.preprocessing import *
@@ -39,10 +33,11 @@ dataset.apply(apply_unit_distance_normalization)
 
 ANGLES_TO_ROTATE = [5, 10, 15, 45, -5, -10, -15, -45]
 
-NUM_EPOCHS = 30
+NUM_EPOCHS = 20
 PARAM_BATCH_SIZE = 300
 
-NUM_SAMPLES_TO_TRY = [300, 200, 150, 100, 75, 50, 25, 10]
+#NUM_SAMPLES_TO_TRY =  [300, 200, 150, 100, 75, 50, 25, 10]
+NUM_SAMPLES_TO_TRY =  [350, 250, 75]
 
 scores_valid = []
 scores_test = []
@@ -74,7 +69,7 @@ for num_samples in NUM_SAMPLES_TO_TRY:
     scores_valid.append(score_valid)
     scores_test.append(score_test)
     
-    with open(os.path.join("files", "pickles", "Q_spline_num_samples.pkl"), 'wb') as fd:
+    with open(os.path.join("files", "pickles", "Q_spline_num_samples_2.pkl"), 'wb') as fd:
         pickle.dump([scores_valid, scores_test], fd)
     
 
@@ -98,5 +93,6 @@ xticks = mtick.FormatStrFormatter(fmt)
 ax.yaxis.set_major_formatter(xticks)
 plt.xlabel("Number of Frames to Sample from Spline")
 plt.ylabel("Prediction Accuracy")
+plt.legend(loc='lower right')
 #plt.legend()
 
